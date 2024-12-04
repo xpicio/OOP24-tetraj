@@ -54,4 +54,9 @@ public final class LoggerFactory {
   public static void clearCache() {
     LOGGER_CACHE.clear();
   }
+
+  public static void flushAll() {
+    LOGGER_CACHE.values().forEach(Logger::flush);
+    clearCache();
+  }
 }

@@ -159,4 +159,7 @@ public interface Logger {
    * @return The logger name (typically the class name)
    */
   String getName();
+
+  /** Flushes any buffered log messages. */
+  void flush();
 }

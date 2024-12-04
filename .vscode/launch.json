@@ -8,7 +8,7 @@
       "type": "java",
       "name": "Launch Java Program",
       "request": "launch",
-      "mainClass": "it.unibo.tetraj.Main",
+      "mainClass": "it.unibo.tetraj.ApplicationContext",
       "projectName": "tetraj"
     }
   ]

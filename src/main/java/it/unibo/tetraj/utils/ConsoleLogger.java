@@ -161,6 +161,12 @@ public final class ConsoleLogger implements Logger {
     return name;
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public void flush() {
+    LogManager.shutdown();
+  }
+
   /**
    * Formats a message with parameters using SLF4J style ({} placeholders).
    *
@@ -171,25 +177,5 @@ public final class ConsoleLogger implements Logger {
   private String formatMessage(final String format, final Object... args) {
     // Log4j2 natively supports {} format through ParameterizedMessage
     return ParameterizedMessage.format(format, args);
-  }
-
-  /**
-   * Utility method to get a logger for a class.
-   *
-   * @param clazz The class
-   * @return A new ConsoleLogger
-   */
-  public static Logger getLogger(final Class<?> clazz) {
-    return new ConsoleLogger(clazz);
-  }
-
-  /**
-   * Utility method to get a logger with a specific name.
-   *
-   * @param name The logger name
-   * @return A new ConsoleLogger
-   */
-  public static Logger getLogger(final String name) {
-    return new ConsoleLogger(name);
   }
 }
