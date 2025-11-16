@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.Delete
+
 plugins {
     // Apply the java plugin to add support for Java
     java
@@ -62,4 +65,48 @@ tasks.withType<Test>().configureEach {
         events(*org.gradle.api.tasks.testing.logging.TestLogEvent.entries.toTypedArray())
         showStandardStreams = true // Show the standard output
     }
+}
+
+// Build LaTeX report
+val latexSourceDir = "report"
+val latexMainFile = "main.tex"
+
+fun latexTask(name: String, args: String) =
+    tasks.register<Exec>(name) {
+        group = "documentation"
+        description = "LaTeX task: $name"
+
+        onlyIf {
+            try {
+                val p = ProcessBuilder("docker", "--version")
+                    .redirectErrorStream(true)
+                    .start()
+
+                p.waitFor() == 0
+            } catch (e: Exception) {
+                println("⚠️ Docker is not available, skipping LaTeX build")
+                false
+            }
+        }
+
+        workingDir = projectDir
+
+        inputs.dir(project.layout.projectDirectory.dir(latexSourceDir))
+
+        commandLine = listOf(
+            "docker", "run", "--rm",
+            "-v", "${projectDir.resolve(latexSourceDir)}:/source:ro",
+            "-v", "${projectDir}:/build",
+            "-w", "/source",
+            "texlive/texlive:latest",
+            "sh", "-c",
+            "latexmk -r /source/.latexmkrc $args"
+        )
+    }
+
+latexTask("buildPdf", latexMainFile)
+latexTask("cleanPdf", "-c $latexMainFile")
+
+tasks.clean {
+    dependsOn("cleanPdf")
 }
