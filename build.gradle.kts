@@ -16,6 +16,7 @@ plugins {
      */
     id("com.gradleup.shadow") version "9.2.2"
     id("org.danilopianini.gradle-java-qa") version "1.157.0"
+    id("com.diffplug.spotless") version "6.23.3"
 }
 
 java {
@@ -59,6 +60,15 @@ tasks.withType<Test>().configureEach {
         // Display all events (test started, succeeded, failed...)
         events(*org.gradle.api.tasks.testing.logging.TestLogEvent.entries.toTypedArray())
         showStandardStreams = true // Show the standard output
+    }
+}
+
+// Spotless formatter
+spotless {
+    java {
+        googleJavaFormat("1.17.0")
+
+        target("src/**/*.java")
     }
 }
 

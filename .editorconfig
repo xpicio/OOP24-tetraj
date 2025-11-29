@@ -1,0 +1,79 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# Questo file garantisce consistenza del codice tra diversi editor/IDE
+
+# Top-most EditorConfig file
+root = true
+
+# Defaults per tutti i file
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Java files
+[*.java]
+indent_style = space
+indent_size = 2
+continuation_indent_size = 4
+max_line_length = 130
+tab_width = 2
+
+# XML files (build.gradle, pom.xml, checkstyle.xml, etc.)
+[*.xml]
+indent_style = space
+indent_size = 2
+continuation_indent_size = 4
+tab_width = 2
+
+# Gradle files
+[*.{gradle,gradle.kts}]
+indent_style = space
+indent_size = 4
+continuation_indent_size = 8
+tab_width = 4
+
+# Properties files
+[*.properties]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Shell scripts
+[*.sh]
+indent_style = space
+indent_size = 2
+
+# Batch scripts
+[*.{bat,cmd}]
+end_of_line = crlf
+indent_style = tab
+
+# Makefiles (require tabs)
+[Makefile]
+indent_style = tab
+
+# Git files
+[.gitignore]
+end_of_line = lf
+
+# Special VSCode settings files
+[.vscode/*.json]
+indent_style = space
+indent_size = 2
+insert_final_newline = false

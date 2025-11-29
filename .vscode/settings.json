@@ -1,11 +1,21 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.runtimes": [
-        {
-            "name": "JavaSE-21",
-            "path": "/opt/homebrew/opt/sdkman-cli/libexec/candidates/java/21.0.9-tem",
-            "default": true
-        }
-    ],
-    "java.configuration.updateBuildConfiguration": "automatic"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "/opt/homebrew/opt/sdkman-cli/libexec/candidates/java/21.0.9-tem",
+      "default": true
+    }
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic",
+    // DISABILITA formattazione automatica NATIVA per Java!
+    // Useremo Google Java Format con shortcut manuale
+    "[java]": {
+        "editor.formatOnSave": false,
+        "editor.formatOnPaste": false,
+        "editor.formatOnType": false,
+        "editor.defaultFormatter": null
+    },
+  // Disabilita anche gli organizer di import automatici
+  "java.saveActions.organizeImports": false
 }
