@@ -35,7 +35,7 @@ class BagRandomizerStrategyTest {
     // Arrange - done in setUp()
 
     // Act
-    Class<? extends AbstractTetromino<?>> result = strategy.next();
+    final Class<? extends AbstractTetromino<?>> result = strategy.next();
 
     // Assert
     assertNotNull(result, "next() should never return null");
@@ -47,7 +47,7 @@ class BagRandomizerStrategyTest {
     // Arrange - done in setUp()
 
     // Act
-    Class<? extends AbstractTetromino<?>> result = strategy.next();
+    final Class<? extends AbstractTetromino<?>> result = strategy.next();
 
     // Assert
     assertTrue(
@@ -59,7 +59,7 @@ class BagRandomizerStrategyTest {
   @DisplayName("should return each tetromino type exactly once per bag cycle")
   void shouldReturnEachTypeOncePerCycle() {
     // Arrange
-    Set<Class<? extends AbstractTetromino<?>>> receivedTypes = new HashSet<>();
+    final Set<Class<? extends AbstractTetromino<?>>> receivedTypes = new HashSet<>();
 
     // Act
     for (int i = 0; i < bagSize; i++) {
@@ -76,8 +76,8 @@ class BagRandomizerStrategyTest {
   @DisplayName("should refill the bag with all types after emptying")
   void shouldRefillBagAfterEmpty() {
     // Arrange
-    Set<Class<? extends AbstractTetromino<?>>> firstCycle = new HashSet<>();
-    Set<Class<? extends AbstractTetromino<?>>> secondCycle = new HashSet<>();
+    final Set<Class<? extends AbstractTetromino<?>>> firstCycle = new HashSet<>();
+    final Set<Class<? extends AbstractTetromino<?>>> secondCycle = new HashSet<>();
 
     // Act - First cycle
     for (int i = 0; i < bagSize; i++) {
@@ -99,8 +99,8 @@ class BagRandomizerStrategyTest {
   @DisplayName("should produce different order in consecutive bag cycles (statistically)")
   void shouldProduceDifferentOrderInConsecutiveCycles() {
     // Arrange
-    List<Class<? extends AbstractTetromino<?>>> firstSequence = new ArrayList<>();
-    List<Class<? extends AbstractTetromino<?>>> secondSequence = new ArrayList<>();
+    final List<Class<? extends AbstractTetromino<?>>> firstSequence = new ArrayList<>();
+    final List<Class<? extends AbstractTetromino<?>>> secondSequence = new ArrayList<>();
 
     // Act - Collect first cycle
     for (int i = 0; i < bagSize; i++) {
@@ -115,7 +115,7 @@ class BagRandomizerStrategyTest {
     // Assert
     // Note: There's a small chance (1/7!) they could be identical by random chance
     // For robust testing, we'd run multiple times or use seeded Random
-    boolean isDifferent = !firstSequence.equals(secondSequence);
+    final boolean isDifferent = !firstSequence.equals(secondSequence);
     assertTrue(
         isDifferent || bagSize == 1, // If only 1 type, order can't differ
         "Sequences should be different (may fail rarely due to randomness)");
@@ -126,13 +126,13 @@ class BagRandomizerStrategyTest {
   void shouldDistributePiecesEvenlyOverMultipleCycles() {
     // Arrange
     final int cycles = 10;
-    Set<Class<? extends AbstractTetromino<?>>> allPiecesReceived = new HashSet<>();
+    final Set<Class<? extends AbstractTetromino<?>>> allPiecesReceived = new HashSet<>();
 
     // Act
     for (int cycle = 0; cycle < cycles; cycle++) {
-      Set<Class<? extends AbstractTetromino<?>>> cycleTypes = new HashSet<>();
+      final Set<Class<? extends AbstractTetromino<?>>> cycleTypes = new HashSet<>();
       for (int i = 0; i < bagSize; i++) {
-        Class<? extends AbstractTetromino<?>> piece = strategy.next();
+        final Class<? extends AbstractTetromino<?>> piece = strategy.next();
         cycleTypes.add(piece);
         allPiecesReceived.add(piece);
       }
@@ -155,22 +155,15 @@ class BagRandomizerStrategyTest {
   void shouldNeverFailOnManyCalls() {
     // Arrange
     final int iterations = 1000;
-    boolean allSuccessful = true;
 
-    // Act
-    try {
-      for (int i = 0; i < iterations; i++) {
-        Class<? extends AbstractTetromino<?>> result = strategy.next();
-        if (result == null || !availableTypes.contains(result)) {
-          allSuccessful = false;
-          break;
-        }
-      }
-    } catch (Exception e) {
-      allSuccessful = false;
+    // Act & Assert - the test will fail if any exception is thrown
+    for (int i = 0; i < iterations; i++) {
+      final Class<? extends AbstractTetromino<?>> result = strategy.next();
+
+      // Assert each result is valid
+      assertNotNull(result, "Result should never be null at iteration " + i);
+      assertTrue(
+          availableTypes.contains(result), "Result should be a valid type at iteration " + i);
     }
-
-    // Assert
-    assertTrue(allSuccessful, "Calling next() " + iterations + " times should never fail");
   }
 }

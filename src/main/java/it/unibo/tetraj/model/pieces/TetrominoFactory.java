@@ -8,14 +8,26 @@ import java.util.Objects;
  * calculation.
  */
 public final class TetrominoFactory {
-  private PieceSelectionStrategy strategy;
 
-  public TetrominoFactory(final PieceSelectionStrategy strategy) {
-    this.strategy = Objects.requireNonNull(strategy);
+  /** The strategy used to select which piece to create next. */
+  private final PieceSelectionStrategy pieceSelectionStrategy;
+
+  /**
+   * Creates a new factory with the specified selection strategy.
+   *
+   * @param pieceSelectionStrategy the piece selection strategy
+   */
+  public TetrominoFactory(final PieceSelectionStrategy pieceSelectionStrategy) {
+    this.pieceSelectionStrategy = Objects.requireNonNull(pieceSelectionStrategy);
   }
 
+  /**
+   * Creates a new tetromino using the configured selection strategy.
+   *
+   * @return a new tetromino instance at position (0, 0)
+   */
   public AbstractTetromino<?> create() {
-    final Class<? extends AbstractTetromino<?>> clazz = strategy.next();
+    final Class<? extends AbstractTetromino<?>> clazz = pieceSelectionStrategy.next();
     return TetrominoRegistry.getInstance().create(clazz, 0, 0);
   }
 }

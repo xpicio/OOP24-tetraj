@@ -4,13 +4,17 @@ import it.unibo.tetraj.model.pieces.AbstractTetromino;
 import it.unibo.tetraj.model.pieces.TetrominoRegistry;
 import it.unibo.tetraj.utils.Logger;
 import it.unibo.tetraj.utils.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class BagRandomizerStrategy implements PieceSelectionStrategy {
+/**
+ * Bag randomizer strategy for piece selection. Ensures each tetromino type appears exactly once
+ * before the bag is refilled. This provides more balanced gameplay compared to pure random
+ * selection.
+ */
+public final class BagRandomizerStrategy implements PieceSelectionStrategy {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BagRandomizerStrategy.class);
   private final List<Class<? extends AbstractTetromino<?>>> bag = new ArrayList<>();
@@ -22,13 +26,18 @@ public class BagRandomizerStrategy implements PieceSelectionStrategy {
   public Class<? extends AbstractTetromino<?>> next() {
     final Class<? extends AbstractTetromino<?>> currentPiece;
 
-    if (this.bag.isEmpty()) {
+    if (bag.isEmpty()) {
       LOGGER.info("Bag empty, shuffling {} pieces", availableTypes.size());
-      this.bag.addAll(this.availableTypes);
-      Collections.shuffle(this.bag, this.random);
+      bag.addAll(availableTypes);
+      Collections.shuffle(bag, random);
     }
-    currentPiece = this.bag.remove(0);
+    currentPiece = bag.remove(0);
     LOGGER.info("Spawning piece {}", currentPiece.getSimpleName());
     return currentPiece;
+  }
+
+  @Override
+  public void reset() {
+    bag.clear();
   }
 }

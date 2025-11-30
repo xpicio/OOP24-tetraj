@@ -17,8 +17,7 @@ public interface PieceSelectionStrategy {
 
   /**
    * Resets the strategy to its initial state. Useful for strategies that maintain internal state
-   * (e.g., bag randomizer, sequences). Default implementation does nothing.
+   * (e.g., bag randomizer, sequences).
    */
-  default void reset() {
-  }
+  void reset();
 }

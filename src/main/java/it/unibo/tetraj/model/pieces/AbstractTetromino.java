@@ -38,79 +38,58 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
     this.rotation = other.getRotation();
   }
 
-  /**
-   * Moves the tetromino by the specified offset.
-   *
-   * @param dx X offset
-   * @param dy Y offset
-   */
+  /** {@inheritDoc} */
+  @Override
   public void move(final int dx, final int dy) {
     this.x += dx;
     this.y += dy;
   }
 
-  /** Rotates the tetromino clockwise. */
+  /** {@inheritDoc} */
+  @Override
   public void rotateClockwise() {
     rotation = (rotation + 1) % 4;
   }
 
-  /** Rotates the tetromino counter-clockwise. */
+  /** {@inheritDoc} */
+  @Override
   public void rotateCounterClockwise() {
     rotation = (rotation + 3) % 4;
   }
 
-  /**
-   * Gets the current shape matrix of the tetromino.
-   *
-   * @return The shape matrix
-   */
+  /** {@inheritDoc} */
+  @Override
   public int[][] getShape() {
     return getShapes()[rotation];
   }
 
-  /**
-   * Gets the width of the current shape.
-   *
-   * @return The width in cells
-   */
+  /** {@inheritDoc} */
+  @Override
   public int getWidth() {
     final int[][] shape = getShape();
     return shape[0].length;
   }
 
-  /**
-   * Gets the height of the current shape.
-   *
-   * @return The height in cells
-   */
+  /** {@inheritDoc} */
+  @Override
   public int getHeight() {
     return getShape().length;
   }
 
-  /**
-   * Gets the X position.
-   *
-   * @return The X coordinate
-   */
+  /** {@inheritDoc} */
+  @Override
   public int getX() {
     return x;
   }
 
-  /**
-   * Gets the Y position.
-   *
-   * @return The Y coordinate
-   */
+  /** {@inheritDoc} */
+  @Override
   public int getY() {
     return y;
   }
 
-  /**
-   * Sets the position.
-   *
-   * @param newX The X coordinate
-   * @param newY The Y coordinate
-   */
+  /** {@inheritDoc} */
+  @Override
   public void setPosition(final int newX, final int newY) {
     this.x = newX;
     this.y = newY;
@@ -137,6 +116,7 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
    *
    * @return The color
    */
+  @Override
   public abstract Color getColor();
 
   /**
@@ -144,5 +124,6 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
    *
    * @return A new instance with the same state
    */
+  @Override
   public abstract T copy();
 }
