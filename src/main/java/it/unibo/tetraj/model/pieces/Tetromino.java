@@ -23,9 +23,13 @@ public interface Tetromino {
   void rotateCounterClockwise();
 
   /**
-   * Returns the current shape matrix of the tetromino.
+   * Returns the 2D matrix representing the tetromino's shape in its current rotation state.
    *
-   * @return a 2D array representing the tetromino shape
+   * <p>This typically implements the <b>Precomputed Rotation Lookup Table</b> pattern: instead of
+   * calculating the rotation algorithmically, it retrieves the specific grid slice (e.g., a 4x4
+   * matrix) corresponding to the current rotation index.
+   *
+   * @return a 2D array where 1 represents a block and 0 represents empty space.
    */
   int[][] getShape();
 
