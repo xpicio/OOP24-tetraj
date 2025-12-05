@@ -1,4 +1,4 @@
-package it.unibo.tetraj.utils;
+package it.unibo.tetraj.util;
 
 /**
  * Interface for the game's logging system. Provides an abstraction layer over the concrete logging

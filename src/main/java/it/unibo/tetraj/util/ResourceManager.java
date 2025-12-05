@@ -1,7 +1,5 @@
 package it.unibo.tetraj.util;
 
-import it.unibo.tetraj.utils.Logger;
-import it.unibo.tetraj.utils.LoggerFactory;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -298,6 +296,5 @@ public final class ResourceManager {
    * @param name The font file name
    * @param size The font size
    */
-  private record FontKey(String name, float size) {
-  }
+  private record FontKey(String name, float size) {}
 }

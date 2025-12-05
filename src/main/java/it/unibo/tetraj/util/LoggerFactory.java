@@ -1,4 +1,4 @@
-package it.unibo.tetraj.utils;
+package it.unibo.tetraj.util;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

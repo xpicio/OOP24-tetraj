@@ -1,4 +1,4 @@
-package it.unibo.tetraj.utils;
+package it.unibo.tetraj.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.message.ParameterizedMessage;

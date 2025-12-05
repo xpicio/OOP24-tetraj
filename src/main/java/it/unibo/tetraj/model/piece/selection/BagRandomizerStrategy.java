@@ -2,8 +2,8 @@ package it.unibo.tetraj.model.piece.selection;
 
 import it.unibo.tetraj.model.piece.AbstractTetromino;
 import it.unibo.tetraj.model.piece.TetrominoRegistry;
-import it.unibo.tetraj.utils.Logger;
-import it.unibo.tetraj.utils.LoggerFactory;
+import it.unibo.tetraj.util.Logger;
+import it.unibo.tetraj.util.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

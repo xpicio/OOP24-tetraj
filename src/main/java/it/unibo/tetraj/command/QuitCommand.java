@@ -1,8 +1,8 @@
 package it.unibo.tetraj.command;
 
 import it.unibo.tetraj.ApplicationContext;
-import it.unibo.tetraj.utils.Logger;
-import it.unibo.tetraj.utils.LoggerFactory;
+import it.unibo.tetraj.util.Logger;
+import it.unibo.tetraj.util.LoggerFactory;
 
 /** Command to quit the game gracefully. */
 public class QuitCommand implements Command {

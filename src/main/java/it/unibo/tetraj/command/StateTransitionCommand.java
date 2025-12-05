@@ -2,8 +2,8 @@ package it.unibo.tetraj.command;
 
 import it.unibo.tetraj.GameState;
 import it.unibo.tetraj.GameStateManager;
-import it.unibo.tetraj.utils.Logger;
-import it.unibo.tetraj.utils.LoggerFactory;
+import it.unibo.tetraj.util.Logger;
+import it.unibo.tetraj.util.LoggerFactory;
 
 /** Command to transition to a different game state. */
 public class StateTransitionCommand implements Command {

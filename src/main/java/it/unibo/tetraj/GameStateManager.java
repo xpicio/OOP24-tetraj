@@ -1,8 +1,8 @@
 package it.unibo.tetraj;
 
 import it.unibo.tetraj.controller.Controller;
-import it.unibo.tetraj.utils.Logger;
-import it.unibo.tetraj.utils.LoggerFactory;
+import it.unibo.tetraj.util.Logger;
+import it.unibo.tetraj.util.LoggerFactory;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
