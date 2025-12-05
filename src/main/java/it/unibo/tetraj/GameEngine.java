@@ -3,6 +3,7 @@ package it.unibo.tetraj;
 import it.unibo.tetraj.controller.Controller;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
+import it.unibo.tetraj.util.ResourceManager;
 import java.awt.Canvas;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -20,7 +21,7 @@ public final class GameEngine implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GameEngine.class);
   private static final int TARGET_FPS = 60;
-  // "Optimal" time per frame in nanoseconds
+  // Optimal time per frame in nanoseconds
   private static final long OPTIMAL_TIME = 1_000_000_000 / TARGET_FPS;
   // Conversion from nanoseconds to seconds
   private static final double NANO_TO_SEC = 1.0 / 1_000_000_000.0;
@@ -34,6 +35,7 @@ public final class GameEngine implements Runnable {
   private Thread gameThread;
   private volatile boolean running;
   private Canvas currentCanvas;
+  private ResourceManager resourceManager;
 
   /**
    * Creates a new game engine with dependency injection.
@@ -45,75 +47,14 @@ public final class GameEngine implements Runnable {
     this.window = createWindow();
   }
 
-  /**
-   * Creates and configures the game window.
-   *
-   * @return The configured JFrame
-   */
-  private JFrame createWindow() {
-    final JFrame frame = new JFrame("TETRAJ Draft - State Management Demo");
-    frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    frame.setResizable(false);
-    frame.setLocationRelativeTo(null);
-
-    // Window close handler
-    frame.addWindowListener(
-        new WindowAdapter() {
-          @Override
-          public void windowClosing(final WindowEvent e) {
-            stop();
-          }
-        });
-
-    return frame;
-  }
-
-  /** Updates the displayed canvas when state changes. */
-  private void updateCanvas() {
-    // Get current controller from state manager
-    currentController = stateManager.getCurrentController();
-    if (currentController == null) {
-      return;
-    }
-
-    final Canvas newCanvas = currentController.getCanvas();
-
-    // Remove old canvas
-    if (currentCanvas != null) {
-      window.remove(currentCanvas);
-      // Remove key listeners from old canvas
-      for (final var listener : currentCanvas.getKeyListeners()) {
-        currentCanvas.removeKeyListener(listener);
-      }
-    }
-
-    // Add new canvas
-    currentCanvas = newCanvas;
-    window.add(currentCanvas);
-    window.pack();
-
-    // Add key listener to new canvas
-    currentCanvas.addKeyListener(
-        new KeyAdapter() {
-          @Override
-          public void keyPressed(final KeyEvent e) {
-            if (currentController != null) {
-              currentController.handleInput(e.getKeyCode());
-            }
-          }
-        });
-
-    // Request focus
-    SwingUtilities.invokeLater(
-        () -> {
-          currentCanvas.requestFocusInWindow();
-        });
-  }
-
   /** Starts the game engine. */
   public void start() {
     if (!running) {
       running = true;
+
+      // Preload other resources for faster game start
+      resourceManager = ResourceManager.getInstance();
+      resourceManager.preloadResources();
 
       // Start with menu state
       stateManager.switchTo(GameState.MENU);
@@ -135,6 +76,8 @@ public final class GameEngine implements Runnable {
     if (running) {
       running = false;
       LOGGER.info("Stopping game engine...");
+
+      resourceManager.clearCaches();
 
       // Wait for thread to finish
       try {
@@ -216,5 +159,70 @@ public final class GameEngine implements Runnable {
     }
 
     LOGGER.info("Game loop ended");
+  }
+
+  /**
+   * Creates and configures the game window.
+   *
+   * @return The configured JFrame
+   */
+  private JFrame createWindow() {
+    final JFrame frame = new JFrame("TETRAJ");
+    frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    frame.setResizable(false);
+    frame.setLocationRelativeTo(null);
+
+    // Window close handler
+    frame.addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(final WindowEvent e) {
+            stop();
+          }
+        });
+
+    return frame;
+  }
+
+  /** Updates the displayed canvas when state changes. */
+  private void updateCanvas() {
+    // Get current controller from state manager
+    currentController = stateManager.getCurrentController();
+    if (currentController == null) {
+      return;
+    }
+
+    final Canvas newCanvas = currentController.getCanvas();
+
+    // Remove old canvas
+    if (currentCanvas != null) {
+      window.remove(currentCanvas);
+      // Remove key listeners from old canvas
+      for (final var listener : currentCanvas.getKeyListeners()) {
+        currentCanvas.removeKeyListener(listener);
+      }
+    }
+
+    // Add new canvas
+    currentCanvas = newCanvas;
+    window.add(currentCanvas);
+    window.pack();
+
+    // Add key listener to new canvas
+    currentCanvas.addKeyListener(
+        new KeyAdapter() {
+          @Override
+          public void keyPressed(final KeyEvent e) {
+            if (currentController != null) {
+              currentController.handleInput(e.getKeyCode());
+            }
+          }
+        });
+
+    // Request focus
+    SwingUtilities.invokeLater(
+        () -> {
+          currentCanvas.requestFocusInWindow();
+        });
   }
 }

@@ -16,30 +16,19 @@ public class MenuController implements Controller {
   private static final Logger LOGGER = LoggerFactory.getLogger(MenuController.class);
   private final MenuView view;
   private final InputHandler inputHandler;
-  private final ApplicationContext context;
+  private final ApplicationContext applicationContext;
 
   /**
    * Creates a new menu controller.
    *
-   * @param context The application context
+   * @param applicationContext The application context
    */
-  public MenuController(final ApplicationContext context) {
-    this.context = context;
+  public MenuController(final ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
     this.view = new MenuView();
     this.inputHandler = new InputHandler();
 
     setupKeyBindings();
-  }
-
-  /** Sets up the key bindings for menu state. */
-  private void setupKeyBindings() {
-    // ENTER to start playing
-    inputHandler.bindKey(
-        KeyEvent.VK_ENTER,
-        new StateTransitionCommand(context.getStateManager(), GameState.PLAYING));
-
-    // ESC to quit - use lambda for simplicity
-    inputHandler.bindKey(KeyEvent.VK_ESCAPE, context::shutdown);
   }
 
   /** {@inheritDoc} */
@@ -77,5 +66,16 @@ public class MenuController implements Controller {
   @Override
   public Canvas getCanvas() {
     return view.getCanvas();
+  }
+
+  /** Sets up the key bindings for menu state. */
+  private void setupKeyBindings() {
+    // ENTER to start playing
+    inputHandler.bindKey(
+        KeyEvent.VK_ENTER,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
+
+    // ESC to quit - use lambda for simplicity
+    inputHandler.bindKey(KeyEvent.VK_ESCAPE, applicationContext::shutdown);
   }
 }
