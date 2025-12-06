@@ -1,5 +1,6 @@
 package it.unibo.tetraj.view;
 
+import it.unibo.tetraj.util.ApplicationProperties;
 import it.unibo.tetraj.util.ResourceManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -30,6 +31,7 @@ public final class MenuView {
   private static final Color TEXT_COLOR = Color.WHITE;
   private static final Color HEADER_COLOR = new Color(255, 220, 100);
   private static final Color CREDITS_COLOR = new Color(200, 200, 200);
+  private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private BufferStrategy bufferStrategy;
   private Image backgroundImage;
@@ -40,6 +42,7 @@ public final class MenuView {
 
   /** Creates a new menu view. */
   public MenuView() {
+    applicationProperties = ApplicationProperties.getInstance();
     this.canvas = new Canvas();
     canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
     canvas.setBackground(Color.BLACK);
@@ -212,10 +215,11 @@ public final class MenuView {
     g.setColor(CREDITS_COLOR);
     g.setFont(creditsFont);
     // First line of credits
-    drawCenteredString(g, "Patrizio Bertozzi - patrizio.bertozzi@studio.unibo.it", y);
+    drawCenteredString(
+        g, applicationProperties.getAuthor() + " - " + applicationProperties.getAuthorEmail(), y);
     // Second line of credits
     y += CREDITS_LINE_HEIGHT;
-    drawCenteredString(g, "Corso di Programmazione ad oggetti - Università di Bologna", y);
+    drawCenteredString(g, applicationProperties.getAuthorUniversity(), y);
   }
 
   private void drawCenteredString(final Graphics2D g, final String text, final int y) {

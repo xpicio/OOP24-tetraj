@@ -1,5 +1,7 @@
 package it.unibo.tetraj;
 
+import it.unibo.tetraj.util.ApplicationProperties;
+
 /**
  * Application entry point for Tetraj game.
  *
@@ -29,7 +31,7 @@ public final class Main {
 
   /** Configures application name for all platforms. */
   private static void configureApplicationProperties() {
-    final String appName = "Tetraj";
+    final String appName = ApplicationProperties.getInstance().getAppName();
 
     // Get OS name for platform-specific configurations
     final String osName = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT);

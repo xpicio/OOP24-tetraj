@@ -1,6 +1,7 @@
 package it.unibo.tetraj;
 
 import it.unibo.tetraj.controller.Controller;
+import it.unibo.tetraj.util.ApplicationProperties;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
@@ -31,6 +32,7 @@ public final class GameEngine implements Runnable {
   private static final int CANVAS_INIT_DELAY_MS = 50;
   private final JFrame window;
   private final GameStateManager stateManager;
+  private final ApplicationProperties applicationProperties;
   private Controller currentController;
   private Thread gameThread;
   private volatile boolean running;
@@ -43,8 +45,9 @@ public final class GameEngine implements Runnable {
    * @param stateManager The configured state manager
    */
   public GameEngine(final GameStateManager stateManager) {
+    applicationProperties = ApplicationProperties.getInstance();
     this.stateManager = stateManager;
-    this.window = createWindow();
+    window = createWindow();
   }
 
   /** Starts the game engine. */
@@ -167,7 +170,9 @@ public final class GameEngine implements Runnable {
    * @return The configured JFrame
    */
   private JFrame createWindow() {
-    final JFrame frame = new JFrame("TETRAJ");
+    // Get title from properties
+    final String title = applicationProperties.getAppTitle();
+    final JFrame frame = new JFrame(title);
     frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     frame.setResizable(false);
     frame.setLocationRelativeTo(null);
