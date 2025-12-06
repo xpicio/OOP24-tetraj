@@ -22,30 +22,11 @@ public class GameStateManager {
 
   /** Creates a new state manager with defined valid transitions. */
   public GameStateManager() {
-    this.controllers = new EnumMap<>(GameState.class);
-    this.validTransitions = new EnumMap<>(GameState.class);
+    controllers = new EnumMap<>(GameState.class);
+    validTransitions = new EnumMap<>(GameState.class);
 
     // Define valid state transitions
     initializeValidTransitions();
-  }
-
-  /**
-   * Initializes the valid state transitions. MENU -> PLAYING PLAYING -> PAUSED, GAME_OVER, MENU
-   * PAUSED -> PLAYING, MENU GAME_OVER -> MENU, PLAYING
-   */
-  private void initializeValidTransitions() {
-    // From MENU
-    validTransitions.put(GameState.MENU, EnumSet.of(GameState.PLAYING));
-
-    // From PLAYING
-    validTransitions.put(
-        GameState.PLAYING, EnumSet.of(GameState.PAUSED, GameState.GAME_OVER, GameState.MENU));
-
-    // From PAUSED
-    validTransitions.put(GameState.PAUSED, EnumSet.of(GameState.PLAYING, GameState.MENU));
-
-    // From GAME_OVER
-    validTransitions.put(GameState.GAME_OVER, EnumSet.of(GameState.MENU, GameState.PLAYING));
   }
 
   /**
@@ -90,6 +71,14 @@ public class GameStateManager {
 
     LOGGER.info("State transition: {} -> {}", currentState, newState);
 
+    // Check if controller exists for new state
+    final Controller newController = controllers.get(newState);
+
+    if (newController == null) {
+      LOGGER.error("No controller registered for state: {}", newState);
+      return false;
+    }
+
     // Exit current state
     if (currentController != null) {
       currentController.exit();
@@ -97,35 +86,12 @@ public class GameStateManager {
 
     // Switch to new state
     currentState = newState;
-    currentController = controllers.get(newState);
-
-    if (currentController == null) {
-      LOGGER.error("No controller registered for state: ", newState);
-      return false;
-    }
+    currentController = newController;
 
     // Enter new state
     currentController.enter();
 
     return true;
-  }
-
-  /**
-   * Updates the current state.
-   *
-   * @param deltaTime Time elapsed since last update in seconds
-   */
-  public void update(final float deltaTime) {
-    if (currentController != null) {
-      currentController.update(deltaTime);
-    }
-  }
-
-  /** Renders the current state. */
-  public void render() {
-    if (currentController != null) {
-      currentController.render();
-    }
   }
 
   /**
@@ -144,5 +110,24 @@ public class GameStateManager {
    */
   public Controller getCurrentController() {
     return currentController;
+  }
+
+  /**
+   * Initializes the valid state transitions. MENU -> PLAYING PLAYING -> PAUSED, GAME_OVER, MENU
+   * PAUSED -> PLAYING, MENU GAME_OVER -> MENU, PLAYING
+   */
+  private void initializeValidTransitions() {
+    // From MENU
+    validTransitions.put(GameState.MENU, EnumSet.of(GameState.PLAYING));
+
+    // From PLAYING
+    validTransitions.put(
+        GameState.PLAYING, EnumSet.of(GameState.PAUSED, GameState.GAME_OVER, GameState.MENU));
+
+    // From PAUSED
+    validTransitions.put(GameState.PAUSED, EnumSet.of(GameState.PLAYING, GameState.MENU));
+
+    // From GAME_OVER
+    validTransitions.put(GameState.GAME_OVER, EnumSet.of(GameState.MENU, GameState.PLAYING));
   }
 }
