@@ -51,7 +51,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("it.unibo.tetraj.ApplicationContext")
+    mainClass.set("it.unibo.tetraj.Main")
 }
 
 tasks.withType<Test>().configureEach {

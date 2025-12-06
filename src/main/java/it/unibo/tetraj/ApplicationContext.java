@@ -7,6 +7,7 @@ import it.unibo.tetraj.controller.PauseController;
 import it.unibo.tetraj.controller.PlayController;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
+import it.unibo.tetraj.util.ResourceManager;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -54,7 +55,7 @@ public final class ApplicationContext {
   }
 
   /** Bootstraps the entire application. */
-  private void bootstrap() {
+  public void bootstrap() {
     LOGGER.info(SEPARATOR);
     LOGGER.info(TITLE);
     LOGGER.info(SEPARATOR);
@@ -62,6 +63,9 @@ public final class ApplicationContext {
     LOGGER.info("Java Version: " + System.getProperty("java.version"));
     LOGGER.info("OS: " + System.getProperty("os.name"));
     LOGGER.info(SEPARATOR);
+
+    // Register shutdown hook to handle SIGINT and SIGTERM signals
+    addShutdownHook();
 
     // Set system look and feel
     setupLookAndFeel();
@@ -127,6 +131,10 @@ public final class ApplicationContext {
     // Any additional cleanup here
     LOGGER.info("Releasing resources...");
 
+    // Cleanup resources
+    final ResourceManager resourceManager = ResourceManager.getInstance();
+    resourceManager.clearCaches();
+
     LOGGER.info("Shutdown complete. Bye!");
 
     LoggerFactory.flushAll();
@@ -136,14 +144,9 @@ public final class ApplicationContext {
     }
   }
 
-  /**
-   * Main entry point of the application.
-   *
-   * @param args Command line arguments
-   */
-  public static void main(final String[] args) {
+  private void addShutdownHook() {
     final int watchdogTimeout = 10_000;
-    final ApplicationContext context = new ApplicationContext();
+    final ApplicationContext applicationContext = this;
 
     Runtime.getRuntime()
         .addShutdownHook(
@@ -166,9 +169,7 @@ public final class ApplicationContext {
                   watchdog.setDaemon(true);
                   watchdog.start();
 
-                  context.shutdown(true);
+                  applicationContext.shutdown(true);
                 }));
-
-    context.bootstrap();
   }
 }
