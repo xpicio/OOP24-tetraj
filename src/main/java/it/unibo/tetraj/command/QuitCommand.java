@@ -8,21 +8,21 @@ import it.unibo.tetraj.util.LoggerFactory;
 public class QuitCommand implements Command {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(QuitCommand.class);
-  private final ApplicationContext context;
+  private final ApplicationContext applicationContext;
 
   /**
    * Creates a new quit command.
    *
-   * @param context The application context
+   * @param applicationContext The application context
    */
-  public QuitCommand(final ApplicationContext context) {
-    this.context = context;
+  public QuitCommand(final ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
   }
 
   /** {@inheritDoc} */
   @Override
   public void execute() {
     LOGGER.info("Quit command executed, requesting application shutdown");
-    context.shutdown();
+    applicationContext.shutdown();
   }
 }

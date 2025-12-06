@@ -16,19 +16,19 @@ public class PlayController implements Controller {
   private static final Logger LOGGER = LoggerFactory.getLogger(PlayController.class);
   private final PlayView view;
   private final InputHandler inputHandler;
-  private final ApplicationContext context;
+  private final ApplicationContext applicationContext;
   private float elapsedTime;
 
   /**
    * Creates a new play controller.
    *
-   * @param context The application context
+   * @param applicationContext The application context
    */
-  public PlayController(final ApplicationContext context) {
-    this.context = context;
-    this.view = new PlayView();
-    this.inputHandler = new InputHandler();
-    this.elapsedTime = 0;
+  public PlayController(final ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+    view = new PlayView();
+    inputHandler = new InputHandler();
+    elapsedTime = 0;
 
     setupKeyBindings();
   }
@@ -37,11 +37,13 @@ public class PlayController implements Controller {
   private void setupKeyBindings() {
     // P to pause
     inputHandler.bindKey(
-        KeyEvent.VK_P, new StateTransitionCommand(context.getStateManager(), GameState.PAUSED));
+        KeyEvent.VK_P,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PAUSED));
 
     // ESC to return to menu
     inputHandler.bindKey(
-        KeyEvent.VK_ESCAPE, new StateTransitionCommand(context.getStateManager(), GameState.MENU));
+        KeyEvent.VK_ESCAPE,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
   }
 
   /** {@inheritDoc} */
@@ -67,7 +69,7 @@ public class PlayController implements Controller {
     // Demo: automatically trigger game over after 10 seconds
     if (elapsedTime > 10) {
       LOGGER.info("Simulated game over!");
-      context.getStateManager().switchTo(GameState.GAME_OVER);
+      applicationContext.getStateManager().switchTo(GameState.GAME_OVER);
     }
   }
 

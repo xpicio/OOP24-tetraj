@@ -25,8 +25,8 @@ public final class Main {
   public static void main(final String[] args) {
     configureApplicationProperties();
 
-    final ApplicationContext context = new ApplicationContext();
-    context.bootstrap();
+    final ApplicationContext applicationContext = new ApplicationContext();
+    applicationContext.bootstrap();
   }
 
   /** Configures application name for all platforms. */

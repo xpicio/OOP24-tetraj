@@ -16,17 +16,17 @@ public class GameOverController implements Controller {
   private static final Logger LOGGER = LoggerFactory.getLogger(GameOverController.class);
   private final GameOverView view;
   private final InputHandler inputHandler;
-  private final ApplicationContext context;
+  private final ApplicationContext applicationContext;
 
   /**
    * Creates a new game over controller.
    *
-   * @param context The application context
+   * @param applicationContext The application context
    */
-  public GameOverController(final ApplicationContext context) {
-    this.context = context;
-    this.view = new GameOverView();
-    this.inputHandler = new InputHandler();
+  public GameOverController(final ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+    view = new GameOverView();
+    inputHandler = new InputHandler();
 
     setupKeyBindings();
   }
@@ -36,11 +36,12 @@ public class GameOverController implements Controller {
     // ENTER to restart (play again)
     inputHandler.bindKey(
         KeyEvent.VK_ENTER,
-        new StateTransitionCommand(context.getStateManager(), GameState.PLAYING));
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
 
     // ESC to return to menu
     inputHandler.bindKey(
-        KeyEvent.VK_ESCAPE, new StateTransitionCommand(context.getStateManager(), GameState.MENU));
+        KeyEvent.VK_ESCAPE,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
   }
 
   /** {@inheritDoc} */

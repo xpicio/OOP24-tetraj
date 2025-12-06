@@ -16,17 +16,17 @@ public class PauseController implements Controller {
   private static final Logger LOGGER = LoggerFactory.getLogger(PauseController.class);
   private final PauseView view;
   private final InputHandler inputHandler;
-  private final ApplicationContext context;
+  private final ApplicationContext applicationContext;
 
   /**
    * Creates a new pause controller.
    *
-   * @param context The application context
+   * @param applicationContext The application context
    */
-  public PauseController(final ApplicationContext context) {
-    this.context = context;
-    this.view = new PauseView();
-    this.inputHandler = new InputHandler();
+  public PauseController(final ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+    view = new PauseView();
+    inputHandler = new InputHandler();
 
     setupKeyBindings();
   }
@@ -35,11 +35,13 @@ public class PauseController implements Controller {
   private void setupKeyBindings() {
     // P to resume playing
     inputHandler.bindKey(
-        KeyEvent.VK_P, new StateTransitionCommand(context.getStateManager(), GameState.PLAYING));
+        KeyEvent.VK_P,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
 
     // ESC to return to menu
     inputHandler.bindKey(
-        KeyEvent.VK_ESCAPE, new StateTransitionCommand(context.getStateManager(), GameState.MENU));
+        KeyEvent.VK_ESCAPE,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
   }
 
   /** {@inheritDoc} */
