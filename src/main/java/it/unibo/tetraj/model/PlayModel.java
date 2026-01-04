@@ -179,6 +179,20 @@ public final class PlayModel {
     return true;
   }
 
+  /*
+   * Attempts to find a valid position for the rotated piece using wall kick.
+   * Wall kick allows pieces to "slide" into valid positions when rotation
+   * would cause collision with walls or other pieces.
+   *
+   * Tests positions in order:
+   * 1. One cell left
+   * 2. One cell right
+   * 3. Two cells left (for I-piece near walls)
+   * 4. Two cells right
+   * 5. One cell up (floor kick)
+   *
+   * Returns true if a valid position is found, false if rotation is blocked.
+   */
   private boolean tryWallKick() {
     final int[] xOffsets = {-1, 1, -2, 2, 0};
     final int[] yOffsets = {0, 0, 0, 0, -1};
