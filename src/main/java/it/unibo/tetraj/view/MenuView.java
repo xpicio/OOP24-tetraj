@@ -1,5 +1,6 @@
 package it.unibo.tetraj.view;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.model.MenuModel;
 import it.unibo.tetraj.model.MenuModel.Controls;
 import it.unibo.tetraj.model.MenuModel.Credits;
@@ -124,6 +125,9 @@ public final class MenuView {
    *
    * @return The canvas
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP",
+      justification = "Canvas must be exposed for GameEngine to mount current view")
   public Canvas getCanvas() {
     return canvas;
   }

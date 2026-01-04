@@ -114,6 +114,21 @@ public final class MenuModel {
       List<ControlBinding> actions) {
 
     /**
+     * Compact constructor with defensive copies. Uses {@code List.copyOf()} to satisfy SpotBugs
+     * warnings, though lists created with {@code List.of()} are already immutable. No performance
+     * impact as {@code List.copyOf()} returns the same instance for immutable lists.
+     *
+     * @param header The header text
+     * @param sectionTitle The section title
+     * @param movements The movement controls
+     * @param actions The action controls
+     */
+    public Controls {
+      movements = List.copyOf(movements);
+      actions = List.copyOf(actions);
+    }
+
+    /**
      * Single control binding.
      *
      * @param keys The key combination

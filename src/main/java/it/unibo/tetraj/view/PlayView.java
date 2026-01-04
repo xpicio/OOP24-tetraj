@@ -1,5 +1,6 @@
 package it.unibo.tetraj.view;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.model.Board;
 import it.unibo.tetraj.model.PlayModel;
 import it.unibo.tetraj.model.piece.AbstractTetromino;
@@ -88,6 +89,9 @@ public final class PlayView {
    *
    * @return The canvas component
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP",
+      justification = "Canvas must be exposed for GameEngine to mount current view")
   public Canvas getCanvas() {
     return canvas;
   }

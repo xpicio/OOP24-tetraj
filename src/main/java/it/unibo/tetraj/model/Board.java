@@ -159,7 +159,12 @@ public final class Board {
     return height;
   }
 
-  /** Checks if a line is full. */
+  /**
+   * Checks if a line is full.
+   *
+   * @param row The row index to check
+   * @return true if the line is complete, false otherwise
+   */
   private boolean isLineFull(final int row) {
     for (int col = 0; col < width; col++) {
       if (cells[row][col] == null) {
@@ -169,7 +174,11 @@ public final class Board {
     return true;
   }
 
-  /** Removes a line and shifts all lines above it down. */
+  /**
+   * Removes a line and shifts all lines above it down.
+   *
+   * @param row The row index to remove
+   */
   private void removeLine(final int row) {
     // Shift all rows above down by one
     for (int r = row; r > 0; r--) {

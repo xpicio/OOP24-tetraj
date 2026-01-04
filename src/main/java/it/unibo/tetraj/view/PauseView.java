@@ -1,5 +1,6 @@
 package it.unibo.tetraj.view;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -82,6 +83,9 @@ public class PauseView {
    *
    * @return The canvas component
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP",
+      justification = "Canvas must be exposed for GameEngine to mount current view")
   public Canvas getCanvas() {
     return canvas;
   }

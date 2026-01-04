@@ -1,5 +1,6 @@
 package it.unibo.tetraj.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -59,6 +60,9 @@ public final class ResourceManager {
    *
    * @return The resource manager instance
    */
+  @SuppressFBWarnings(
+      value = "MS_EXPOSE_REP",
+      justification = "Singleton pattern requires returning the same instance")
   public static ResourceManager getInstance() {
     return INSTANCE;
   }

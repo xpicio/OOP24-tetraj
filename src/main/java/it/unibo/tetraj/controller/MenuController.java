@@ -17,12 +17,12 @@ import java.awt.event.KeyEvent;
 public class MenuController implements Controller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MenuController.class);
+  private static final float MUSIC_VOLUME = 0.1f;
   private final ApplicationContext applicationContext;
   private final ResourceManager resources;
   private final MenuModel model;
   private final MenuView view;
   private final InputHandler inputHandler;
-  private static final float MUSIC_VOLUME = 0.1f;
 
   /**
    * Creates a new menu controller.
