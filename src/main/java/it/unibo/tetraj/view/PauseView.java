@@ -24,7 +24,7 @@ public class PauseView {
 
   /** Creates a new pause view. */
   public PauseView() {
-    this.canvas = new Canvas();
+    canvas = new Canvas();
     canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
     canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);

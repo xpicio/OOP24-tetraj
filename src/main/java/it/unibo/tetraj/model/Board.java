@@ -28,7 +28,7 @@ public final class Board {
   public Board(final int width, final int height) {
     this.width = width;
     this.height = height;
-    this.cells = new Color[height][width];
+    cells = new Color[height][width];
   }
 
   /**

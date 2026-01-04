@@ -28,7 +28,7 @@ public final class ConsoleLogger implements Logger {
    */
   public ConsoleLogger(final String name) {
     this.name = name;
-    this.log4jLogger = LogManager.getLogger(name);
+    log4jLogger = LogManager.getLogger(name);
   }
 
   /** {@inheritDoc} */

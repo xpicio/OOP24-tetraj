@@ -23,7 +23,7 @@ public final class TetrominoRegistry {
 
   /** Private constructor for singleton pattern. */
   private TetrominoRegistry() {
-    this.factories =
+    factories =
         Map.of(
             ITetromino.class, (x, y) -> new ITetromino(x, y),
             OTetromino.class, (x, y) -> new OTetromino(x, y),
@@ -32,7 +32,7 @@ public final class TetrominoRegistry {
             ZTetromino.class, (x, y) -> new ZTetromino(x, y),
             JTetromino.class, (x, y) -> new JTetromino(x, y),
             LTetromino.class, (x, y) -> new LTetromino(x, y));
-    this.availableTypes = List.copyOf(factories.keySet());
+    availableTypes = List.copyOf(factories.keySet());
   }
 
   /**

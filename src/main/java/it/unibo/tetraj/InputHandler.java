@@ -17,7 +17,7 @@ public class InputHandler {
 
   /** Creates a new input handler. */
   public InputHandler() {
-    this.keyBindings = new HashMap<>();
+    keyBindings = new HashMap<>();
   }
 
   /**

@@ -20,7 +20,6 @@ public final class PlayView {
   private static final int CELL_SIZE = 30;
   private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final int FONT_SIZE = 16;
-
   private final Canvas canvas;
   private final ResourceManager resources;
   private BufferStrategy bufferStrategy;
@@ -29,8 +28,8 @@ public final class PlayView {
 
   /** Creates a new play view. */
   public PlayView() {
-    this.canvas = new Canvas();
-    this.resources = ResourceManager.getInstance();
+    canvas = new Canvas();
+    resources = ResourceManager.getInstance();
     canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
     canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);
@@ -131,30 +130,30 @@ public final class PlayView {
      */
     BoardRenderer(final Board board) {
       // Calculate pixel dimensions for board
-      this.boardWidthCells = board.getWidth();
-      this.boardHeightCells = board.getHeight();
-      this.boardPixelWidth = boardWidthCells * CELL_SIZE;
-      this.boardPixelHeight = boardHeightCells * CELL_SIZE;
+      boardWidthCells = board.getWidth();
+      boardHeightCells = board.getHeight();
+      boardPixelWidth = boardWidthCells * CELL_SIZE;
+      boardPixelHeight = boardHeightCells * CELL_SIZE;
 
       // Calculate centered board position
       final int totalContentWidth = boardPixelWidth + PADDING + GAME_INFO_PANEL_WIDTH;
       final int contentStartX = (WIDTH - totalContentWidth) / 2;
-      this.boardX = contentStartX;
-      this.boardY = (HEIGHT - boardPixelHeight) / 2;
+      boardX = contentStartX;
+      boardY = (HEIGHT - boardPixelHeight) / 2;
 
       // Game info panel position
-      this.gameInfoPanelX = boardX + boardPixelWidth + PADDING;
+      gameInfoPanelX = boardX + boardPixelWidth + PADDING;
 
       // Next and hold positions aligned with board top
-      this.nextY = boardY + TEXT_OFFSET;
-      this.nextBoxY = nextY + BOX_OFFSET;
-      this.holdY = nextY + NEXT_HOLD_SPACING;
-      this.holdBoxY = holdY + BOX_OFFSET;
+      nextY = boardY + TEXT_OFFSET;
+      nextBoxY = nextY + BOX_OFFSET;
+      holdY = nextY + NEXT_HOLD_SPACING;
+      holdBoxY = holdY + BOX_OFFSET;
 
       // Score/Level/Lines aligned with board bottom
-      this.linesY = boardY + boardPixelHeight - TEXT_OFFSET;
-      this.levelY = linesY - INFO_BLOCK_SPACING * 2;
-      this.scoreY = levelY - INFO_BLOCK_SPACING * 2;
+      linesY = boardY + boardPixelHeight - TEXT_OFFSET;
+      levelY = linesY - INFO_BLOCK_SPACING * 2;
+      scoreY = levelY - INFO_BLOCK_SPACING * 2;
     }
 
     /**

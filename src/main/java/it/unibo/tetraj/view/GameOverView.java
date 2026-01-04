@@ -24,7 +24,7 @@ public class GameOverView {
 
   /** Creates a new game over view. */
   public GameOverView() {
-    this.canvas = new Canvas();
+    canvas = new Canvas();
     canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
     canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);

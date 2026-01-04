@@ -17,12 +17,9 @@ public final class MenuModel {
   public MenuModel() {
     final ApplicationProperties props = ApplicationProperties.getInstance();
 
-    this.title = props.getAppTitle();
-    // Initialize credits
-    this.credits =
-        new Credits(props.getAuthor(), props.getAuthorEmail(), props.getAuthorUniversity());
-    // Initialize controls
-    this.controls =
+    title = props.getAppTitle();
+    credits = new Credits(props.getAuthor(), props.getAuthorEmail(), props.getAuthorUniversity());
+    controls =
         new Controls(
             "PRESS ENTER TO START",
             "CONTROLS",

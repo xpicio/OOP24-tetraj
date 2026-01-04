@@ -24,7 +24,7 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
   protected AbstractTetromino(final int x, final int y) {
     this.x = x;
     this.y = y;
-    this.rotation = 0;
+    rotation = 0;
   }
 
   /**
@@ -33,16 +33,16 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
    * @param other The tetromino to copy
    */
   protected AbstractTetromino(final T other) {
-    this.x = other.getX();
-    this.y = other.getY();
-    this.rotation = other.getRotation();
+    x = other.getX();
+    y = other.getY();
+    rotation = other.getRotation();
   }
 
   /** {@inheritDoc} */
   @Override
   public void move(final int dx, final int dy) {
-    this.x += dx;
-    this.y += dy;
+    x += dx;
+    y += dy;
   }
 
   /** {@inheritDoc} */
@@ -91,8 +91,8 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
   /** {@inheritDoc} */
   @Override
   public void setPosition(final int newX, final int newY) {
-    this.x = newX;
-    this.y = newY;
+    x = newX;
+    y = newY;
   }
 
   /**

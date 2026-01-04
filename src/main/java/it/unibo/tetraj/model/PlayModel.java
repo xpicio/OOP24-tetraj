@@ -26,8 +26,8 @@ public final class PlayModel {
 
   /** Creates a new play model. */
   public PlayModel() {
-    this.board = new Board();
-    this.tetrominoFactory = new TetrominoFactory(new BagRandomizerStrategy());
+    board = new Board();
+    tetrominoFactory = new TetrominoFactory(new BagRandomizerStrategy());
     startNewGame();
   }
 
