@@ -27,8 +27,7 @@ public class GameOverController implements Controller {
     this.applicationContext = applicationContext;
     view = new GameOverView();
     inputHandler = new InputHandler();
-
-    setupKeyBindings();
+    // Don't setup bindings in constructor anymore
   }
 
   /** Sets up the key bindings for game over state. */
@@ -47,13 +46,14 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter() {
+    setupKeyBindings();
     LOGGER.info("Entering game over state");
-    // Don't initialize here, let render() handle it lazily
   }
 
   /** {@inheritDoc} */
   @Override
   public void exit() {
+    inputHandler.clearBindings();
     LOGGER.info("Exiting game over state");
   }
 

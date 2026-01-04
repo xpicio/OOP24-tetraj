@@ -6,6 +6,8 @@ import it.unibo.tetraj.InputHandler;
 import it.unibo.tetraj.command.PlayCommand;
 import it.unibo.tetraj.command.StateTransitionCommand;
 import it.unibo.tetraj.model.PlayModel;
+import it.unibo.tetraj.util.Logger;
+import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.view.PlayView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
@@ -13,6 +15,7 @@ import java.awt.event.KeyEvent;
 /** Controller for the playing state. */
 public final class PlayController implements Controller {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlayController.class);
   private final ApplicationContext applicationContext;
   private final PlayModel model;
   private final PlayView view;
@@ -28,18 +31,19 @@ public final class PlayController implements Controller {
     model = new PlayModel();
     view = new PlayView();
     inputHandler = new InputHandler();
-
-    setupKeyBindings();
   }
 
   @Override
   public void enter() {
     model.startNewGame();
+    setupKeyBindings();
+    LOGGER.info("Entering play state");
   }
 
   @Override
   public void exit() {
-    // Nothing to clean up
+    inputHandler.clearBindings();
+    LOGGER.info("Exiting play state");
   }
 
   @Override

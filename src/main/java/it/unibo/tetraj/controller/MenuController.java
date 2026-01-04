@@ -31,20 +31,19 @@ public class MenuController implements Controller {
     model = new MenuModel();
     view = new MenuView();
     inputHandler = new InputHandler();
-
-    setupKeyBindings();
   }
 
   /** {@inheritDoc} */
   @Override
   public void enter() {
+    setupKeyBindings();
     LOGGER.info("Entering menu state");
-    // Don't initialize here, let render() handle it lazily
   }
 
   /** {@inheritDoc} */
   @Override
   public void exit() {
+    inputHandler.clearBindings();
     LOGGER.info("Exiting menu state");
   }
 

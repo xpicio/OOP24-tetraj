@@ -27,33 +27,19 @@ public class PauseController implements Controller {
     this.applicationContext = applicationContext;
     view = new PauseView();
     inputHandler = new InputHandler();
-
-    setupKeyBindings();
-  }
-
-  /** Sets up the key bindings for pause state. */
-  private void setupKeyBindings() {
-    // P to resume playing
-    inputHandler.bindKey(
-        KeyEvent.VK_P,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
-
-    // ESC to return to menu
-    inputHandler.bindKey(
-        KeyEvent.VK_ESCAPE,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
   }
 
   /** {@inheritDoc} */
   @Override
   public void enter() {
+    setupKeyBindings();
     LOGGER.info("Entering pause state");
-    // Don't initialize here, let render() handle it lazily
   }
 
   /** {@inheritDoc} */
   @Override
   public void exit() {
+    inputHandler.clearBindings();
     LOGGER.info("Exiting pause state");
   }
 
@@ -79,5 +65,18 @@ public class PauseController implements Controller {
   @Override
   public Canvas getCanvas() {
     return view.getCanvas();
+  }
+
+  /** Sets up the key bindings for pause state. */
+  private void setupKeyBindings() {
+    // P to resume playing
+    inputHandler.bindKey(
+        KeyEvent.VK_P,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
+
+    // ESC to return to menu
+    inputHandler.bindKey(
+        KeyEvent.VK_ESCAPE,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
   }
 }
