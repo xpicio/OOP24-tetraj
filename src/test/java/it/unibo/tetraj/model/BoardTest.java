@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 /** Tests for the Board class. */
 class BoardTest {
 
-  // Test constants for board positions
   private static final int BOTTOM_ROW = 19;
   private static final int SECOND_BOTTOM_ROW = 18;
   private static final int THIRD_BOTTOM_ROW = 17;
@@ -34,7 +33,6 @@ class BoardTest {
   private static final int FOUR_LINES = 4;
   private static final int THREE_LINES = 3;
   private static final int ONE_LINE = 1;
-
   private Board board;
   private BoardTestHelper helper;
 

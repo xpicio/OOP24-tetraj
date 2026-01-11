@@ -163,7 +163,6 @@ public final class MenuView {
 
     // Load background image
     backgroundImage = resources.loadImage("splashScreenBackground.png");
-
     // Load fonts
     titleFont = resources.getPressStart2PFont(TITLE_SIZE);
     headerFont = resources.getPressStart2PFont(HEADER_SIZE);
@@ -179,6 +178,7 @@ public final class MenuView {
    */
   private void drawTitle(final Graphics2D g, final MenuModel model) {
     final String appTitle = model.getAppTitle();
+
     g.setColor(HEADER_COLOR);
     g.setFont(titleFont);
     RenderUtils.drawCenteredString(
@@ -199,24 +199,18 @@ public final class MenuView {
     g.setColor(HEADER_COLOR);
     g.setFont(headerFont);
     RenderUtils.drawCenteredString(g, windowWidth, y, controls.header());
-
     y += SECTION_SPACING;
-
     // Controls section
     g.setFont(textFont);
     RenderUtils.drawCenteredString(g, windowWidth, y, controls.sectionTitle());
-
     y += LINE_HEIGHT + 10;
-
     g.setColor(TEXT_COLOR);
     g.setFont(textFont);
-
     // Movement controls
     for (final Controls.ControlBinding binding : controls.movements()) {
       RenderUtils.drawCenteredString(g, windowWidth, y, binding.toString());
       y += LINE_HEIGHT;
     }
-
     // Action controls
     y += LINE_HEIGHT + 10;
     for (final Controls.ControlBinding binding : controls.actions()) {

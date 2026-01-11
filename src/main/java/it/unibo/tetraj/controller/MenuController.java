@@ -1,6 +1,7 @@
 package it.unibo.tetraj.controller;
 
 import it.unibo.tetraj.ApplicationContext;
+import it.unibo.tetraj.GameSession;
 import it.unibo.tetraj.GameState;
 import it.unibo.tetraj.InputHandler;
 import it.unibo.tetraj.command.QuitCommand;
@@ -39,7 +40,7 @@ public class MenuController implements Controller {
 
   /** {@inheritDoc} */
   @Override
-  public void enter() {
+  public void enter(final GameSession gameSession) {
     resources.playBackgroundMusic("menuLoop.wav", MUSIC_VOLUME);
     setupKeyBindings();
     LOGGER.info("Entering menu state");
@@ -47,9 +48,11 @@ public class MenuController implements Controller {
 
   /** {@inheritDoc} */
   @Override
-  public void exit() {
+  public GameSession exit() {
+    final GameSession gameSession = GameSession.empty();
     inputHandler.clearBindings();
-    LOGGER.info("Exiting menu state");
+    LOGGER.info(String.format("Exiting menu state with %s", gameSession));
+    return gameSession;
   }
 
   /** {@inheritDoc} */

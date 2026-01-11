@@ -6,7 +6,10 @@ import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferStrategy;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Utility class for common rendering operations in views. Provides methods for text rendering,
@@ -16,8 +19,8 @@ public final class RenderUtils {
 
   private static final int DEFAULT_ROW_SPACING = 20;
   private static final int TITLE_ROW_SPACING = 30;
-  private static final int MIN_ALPHA = 0;
-  private static final int MAX_ALPHA = 1;
+  private static final float MIN_ALPHA = 0.0f;
+  private static final float MAX_ALPHA = 1.0f;
 
   /** Private constructor to prevent instantiation. */
   private RenderUtils() {
@@ -25,12 +28,13 @@ public final class RenderUtils {
   }
 
   /**
-   * Draws a vertically and horizontally centered text block. Supports an optional title font for
-   * the first line.
+   * Draws a vertically and horizontally centered text block with custom title color. Supports an
+   * optional title font and color for the first line.
    *
    * @param g The graphics context
    * @param lines The lines of text to draw
    * @param titleFont Font for the first line, null for uniform font
+   * @param titleFontColor Color for the title text
    * @param canvasWidth The width of the canvas for centering
    * @param canvasHeight The height of the canvas for centering
    */
@@ -38,6 +42,7 @@ public final class RenderUtils {
       final Graphics2D g,
       final List<String> lines,
       final Font titleFont,
+      final Color titleFontColor,
       final int canvasWidth,
       final int canvasHeight) {
     if (lines.isEmpty()) {
@@ -58,9 +63,37 @@ public final class RenderUtils {
     final int startY = centerY - totalHeight / 2;
 
     // Draw each line
-    drawLines(g, titleFont, originalFont, hasTitle, startY, rowSpacing, canvasWidth, lines);
+    drawLines(
+        g,
+        titleFont,
+        titleFontColor,
+        originalFont,
+        hasTitle,
+        startY,
+        rowSpacing,
+        canvasWidth,
+        lines);
     // Restore original font
     g.setFont(originalFont);
+  }
+
+  /**
+   * Draws a vertically and horizontally centered text block. Supports an optional title font for
+   * the first line.
+   *
+   * @param g The graphics context
+   * @param lines The lines of text to draw
+   * @param titleFont Font for the first line, null for uniform font
+   * @param canvasWidth The width of the canvas for centering
+   * @param canvasHeight The height of the canvas for centering
+   */
+  public static void drawCenteredTextBlock(
+      final Graphics2D g,
+      final List<String> lines,
+      final Font titleFont,
+      final int canvasWidth,
+      final int canvasHeight) {
+    drawCenteredTextBlock(g, lines, titleFont, g.getColor(), canvasWidth, canvasHeight);
   }
 
   /**
@@ -99,15 +132,43 @@ public final class RenderUtils {
   }
 
   /**
-   * Calculates the total height needed for a text block.
+   * Executes a rendering operation with proper setup and cleanup. Handles graphics preparation,
+   * antialiasing, background clearing, and disposal.
    *
-   * @param lines The lines of text to measure
-   * @param hasTitle Whether the first line uses a title font
-   * @param titleMetrics Font metrics for the title font
-   * @param textMetrics Font metrics for regular text
-   * @param rowSpacing Spacing between rows
-   * @return The total height in pixels needed for the text block
+   * @param bufferStrategy The buffer strategy to use
+   * @param backgroundColor The background color
+   * @param width Canvas width
+   * @param height Canvas height
+   * @param renderAction The rendering code to execute
    */
+  public static void renderWithGraphics(
+      final BufferStrategy bufferStrategy,
+      final Color backgroundColor,
+      final int width,
+      final int height,
+      final Consumer<Graphics2D> renderAction) {
+    if (bufferStrategy == null) {
+      return;
+    }
+
+    Graphics2D g = null;
+    try {
+      g = (Graphics2D) bufferStrategy.getDrawGraphics();
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setColor(backgroundColor);
+      g.fillRect(0, 0, width, height);
+
+      renderAction.accept(g);
+
+      bufferStrategy.show();
+    } finally {
+      if (g != null) {
+        g.dispose();
+      }
+    }
+  }
+
+  /** Calculates the total height needed for a text block. */
   private static int calculateTotalHeight(
       final List<String> lines,
       final boolean hasTitle,
@@ -139,35 +200,28 @@ public final class RenderUtils {
     return height;
   }
 
-  /**
-   * Draws the lines with appropriate fonts and spacing.
-   *
-   * @param g The graphics context
-   * @param titleFont Font for the title (first line)
-   * @param textFont Font for regular text
-   * @param hasTitle Whether to use title font for first line
-   * @param startY Starting Y coordinate
-   * @param rowSpacing Spacing between rows
-   * @param canvasWidth Width of the canvas for centering
-   * @param lines The lines of text to draw
-   */
+  /** Draws the lines with appropriate fonts and spacing. */
   private static void drawLines(
       final Graphics2D g,
       final Font titleFont,
+      final Color titleFontColor,
       final Font textFont,
       final boolean hasTitle,
       final int startY,
       final int rowSpacing,
       final int canvasWidth,
       final List<String> lines) {
+    final Color originalFontColor = g.getColor();
     int currentY = startY;
 
     for (int i = 0; i < lines.size(); i++) {
       final boolean isTitle = hasTitle && i == 0;
       // Set appropriate font
       if (isTitle) {
+        g.setColor(titleFontColor);
         g.setFont(titleFont);
       } else {
+        g.setColor(originalFontColor);
         g.setFont(textFont);
       }
       // Get metrics for current font

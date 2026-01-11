@@ -1,6 +1,7 @@
 package it.unibo.tetraj.controller;
 
 import it.unibo.tetraj.ApplicationContext;
+import it.unibo.tetraj.GameSession;
 import it.unibo.tetraj.GameState;
 import it.unibo.tetraj.InputHandler;
 import it.unibo.tetraj.command.PlayCommand;
@@ -12,6 +13,7 @@ import it.unibo.tetraj.util.ResourceManager;
 import it.unibo.tetraj.view.PlayView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
+import java.time.Instant;
 
 /** Controller for the playing state. */
 public final class PlayController implements Controller {
@@ -22,6 +24,7 @@ public final class PlayController implements Controller {
   private final PlayModel model;
   private final PlayView view;
   private final InputHandler inputHandler;
+  private Instant gameStartTime;
 
   /**
    * Creates a new play controller.
@@ -36,20 +39,34 @@ public final class PlayController implements Controller {
     inputHandler = new InputHandler();
   }
 
+  /** {@inheritDoc} */
   @Override
-  public void enter() {
+  public void enter(final GameSession gameSession) {
     resources.playBackgroundMusic("playLoop.wav");
     model.startNewGame();
+    gameStartTime = Instant.now();
     setupKeyBindings();
     LOGGER.info("Entering play state");
   }
 
+  /** {@inheritDoc} */
   @Override
-  public void exit() {
+  public GameSession exit() {
+    final GameSession gameSession =
+        GameSession.builder()
+            .withScore(model.getScore())
+            .withLevel(model.getLevel())
+            .withLinesCleared(model.getLinesCleared())
+            .withLastFrame(view.captureFrame(model))
+            .withGameStart(gameStartTime)
+            .markGameEnd()
+            .build();
     inputHandler.clearBindings();
-    LOGGER.info("Exiting play state");
+    LOGGER.info(String.format("Exiting play state with %s", gameSession));
+    return gameSession;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void update(final float deltaTime) {
     model.update(deltaTime);
@@ -59,16 +76,19 @@ public final class PlayController implements Controller {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void render() {
     view.render(model);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void handleInput(final int keyCode) {
     inputHandler.handleKeyPress(keyCode);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Canvas getCanvas() {
     return view.getCanvas();

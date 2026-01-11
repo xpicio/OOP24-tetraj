@@ -1,15 +1,26 @@
 package it.unibo.tetraj.controller;
 
+import it.unibo.tetraj.GameSession;
 import java.awt.Canvas;
 
 /** Interface for controllers. Each game state has its own implementation handling its logic. */
 public interface Controller {
 
-  /** Called when entering this state. Initialize or reset state-specific resources. */
-  void enter();
+  /**
+   * Called when entering this state. Receives session data from the previous state and initializes
+   * state-specific resources.
+   *
+   * @param gameSession The session data passed from the previous state, may be empty
+   */
+  void enter(GameSession gameSession);
 
-  /** Called when exiting this state. Cleanup state-specific resources. */
-  void exit();
+  /**
+   * Called when exiting this state. Creates and returns session data for the next state and
+   * performs cleanup.
+   *
+   * @return A GameSession containing relevant data for the next state
+   */
+  GameSession exit();
 
   /**
    * Updates the state logic.

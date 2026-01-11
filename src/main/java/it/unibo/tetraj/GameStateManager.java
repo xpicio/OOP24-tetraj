@@ -24,8 +24,6 @@ public class GameStateManager {
   public GameStateManager() {
     controllers = new EnumMap<>(GameState.class);
     validTransitions = new EnumMap<>(GameState.class);
-
-    // Define valid state transitions
     initializeValidTransitions();
   }
 
@@ -63,7 +61,6 @@ public class GameStateManager {
    * @return true if transition was successful
    */
   public boolean switchTo(final GameState newState) {
-    // Check if transition is valid
     if (!isValidTransition(currentState, newState)) {
       LOGGER.warn("Invalid state transition: {} -> {}", currentState, newState);
       return false;
@@ -73,24 +70,21 @@ public class GameStateManager {
 
     // Check if controller exists for new state
     final Controller newController = controllers.get(newState);
+    GameSession gameSession = GameSession.empty();
 
     if (newController == null) {
       LOGGER.error("No controller registered for state: {}", newState);
       return false;
     }
-
     // Exit current state
     if (currentController != null) {
-      currentController.exit();
+      gameSession = currentController.exit();
     }
-
     // Switch to new state
     currentState = newState;
     currentController = newController;
-
     // Enter new state
-    currentController.enter();
-
+    currentController.enter(gameSession);
     return true;
   }
 
@@ -119,10 +113,8 @@ public class GameStateManager {
   private void initializeValidTransitions() {
     // From MENU
     validTransitions.put(GameState.MENU, EnumSet.of(GameState.PLAYING));
-
     // From PLAYING
     validTransitions.put(GameState.PLAYING, EnumSet.of(GameState.GAME_OVER, GameState.MENU));
-
     // From GAME_OVER
     validTransitions.put(GameState.GAME_OVER, EnumSet.of(GameState.MENU, GameState.PLAYING));
   }

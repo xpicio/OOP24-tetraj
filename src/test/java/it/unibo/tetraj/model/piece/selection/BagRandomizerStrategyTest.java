@@ -9,6 +9,7 @@ import it.unibo.tetraj.model.piece.TetrominoRegistry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -115,7 +116,7 @@ class BagRandomizerStrategyTest {
     // Assert
     // Note: There's a small chance (1/7!) they could be identical by random chance
     // For robust testing, we'd run multiple times or use seeded Random
-    final boolean isDifferent = !firstSequence.equals(secondSequence);
+    final boolean isDifferent = !Objects.equals(firstSequence, secondSequence);
     assertTrue(
         isDifferent || bagSize == 1, // If only 1 type, order can't differ
         "Sequences should be different (may fail rarely due to randomness)");

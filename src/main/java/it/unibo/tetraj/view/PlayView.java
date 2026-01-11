@@ -13,6 +13,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 /** View for the playing state. Renders the Tetris game. */
@@ -102,6 +103,32 @@ public final class PlayView {
       justification = "Canvas must be exposed for GameEngine to mount current view")
   public Canvas getCanvas() {
     return canvas;
+  }
+
+  /**
+   * Captures the current game state as a BufferedImage. Creates a snapshot of the entire game view
+   * including board, score, level, and next piece preview. Useful for creating game-over screens or
+   * transitions.
+   *
+   * @param model The play model to render
+   * @return A BufferedImage containing the current rendered frame
+   */
+  public BufferedImage captureFrame(final PlayModel model) {
+    if (renderer == null) {
+      renderer = new BoardRenderer(model.getBoard());
+    }
+
+    final BufferedImage image =
+        new BufferedImage(windowWidth, windowHeight, BufferedImage.TYPE_INT_RGB);
+    final Graphics2D g = image.createGraphics();
+
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    // Clear background
+    g.setColor(BACKGROUND_COLOR);
+    g.fillRect(0, 0, windowWidth, windowHeight);
+    renderer.render(g, model);
+    g.dispose();
+    return image;
   }
 
   /**

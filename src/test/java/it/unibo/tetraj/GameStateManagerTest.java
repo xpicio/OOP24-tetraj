@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -66,7 +67,7 @@ class GameStateManagerTest {
     // Assert
     assertTrue(result, "Should allow transition from null to MENU");
     assertEquals(GameState.MENU, freshStateManager.getCurrentState());
-    verify(controller, times(1)).enter();
+    verify(controller, times(1)).enter(argThat(GameSession::isEmpty));
   }
 
   @Test
@@ -100,7 +101,7 @@ class GameStateManagerTest {
     assertTrue(result, "Should allow transition from MENU to PLAYING");
     assertEquals(GameState.PLAYING, stateManager.getCurrentState());
     verify(menuController, times(1)).exit();
-    verify(playController, times(1)).enter();
+    verify(playController, times(1)).enter(null);
   }
 
   @Test
@@ -135,7 +136,7 @@ class GameStateManagerTest {
     assertTrue(result, "Should allow transition from PLAYING to GAME_OVER");
     assertEquals(GameState.GAME_OVER, stateManager.getCurrentState());
     verify(playController, times(1)).exit();
-    verify(gameOverController, times(1)).enter();
+    verify(gameOverController, times(1)).enter(null);
   }
 
   @Test
@@ -154,7 +155,7 @@ class GameStateManagerTest {
     assertTrue(result, "Should allow transition from GAME_OVER to MENU");
     assertEquals(GameState.MENU, stateManager.getCurrentState());
     verify(gameOverController, times(1)).exit();
-    verify(menuController, times(1)).enter();
+    verify(menuController, times(1)).enter(null);
   }
 
   @Test
@@ -173,7 +174,7 @@ class GameStateManagerTest {
     assertTrue(result, "Should allow transition from GAME_OVER to PLAYING for restart");
     assertEquals(GameState.PLAYING, stateManager.getCurrentState());
     verify(gameOverController, times(1)).exit();
-    verify(playController, times(1)).enter();
+    verify(playController, times(1)).enter(null);
   }
 
   @Test
@@ -268,6 +269,6 @@ class GameStateManagerTest {
     // Assert - verify order of calls using InOrder
     final var inOrder = org.mockito.Mockito.inOrder(menuController, playController);
     inOrder.verify(menuController).exit();
-    inOrder.verify(playController).enter();
+    inOrder.verify(playController).enter(null);
   }
 }

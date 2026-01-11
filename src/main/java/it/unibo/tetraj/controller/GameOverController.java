@@ -1,9 +1,11 @@
 package it.unibo.tetraj.controller;
 
 import it.unibo.tetraj.ApplicationContext;
+import it.unibo.tetraj.GameSession;
 import it.unibo.tetraj.GameState;
 import it.unibo.tetraj.InputHandler;
 import it.unibo.tetraj.command.StateTransitionCommand;
+import it.unibo.tetraj.model.GameOverModel;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.view.GameOverView;
@@ -17,6 +19,7 @@ public class GameOverController implements Controller {
   private final GameOverView view;
   private final InputHandler inputHandler;
   private final ApplicationContext applicationContext;
+  private GameOverModel model;
 
   /**
    * Creates a new game over controller.
@@ -27,7 +30,47 @@ public class GameOverController implements Controller {
     this.applicationContext = applicationContext;
     view = new GameOverView();
     inputHandler = new InputHandler();
-    // Don't setup bindings in constructor anymore
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void enter(final GameSession gameSession) {
+    model = new GameOverModel(gameSession);
+    setupKeyBindings();
+    LOGGER.info("Entering game over state");
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public GameSession exit() {
+    final GameSession gameSession = model.getGameSession();
+    inputHandler.clearBindings();
+    LOGGER.info(String.format("Exiting game over state with %s", gameSession));
+    return gameSession;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void update(final float deltaTime) {
+    // Game over doesn't need updates
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void render() {
+    view.render(model);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void handleInput(final int keyCode) {
+    inputHandler.handleKeyPress(keyCode);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Canvas getCanvas() {
+    return view.getCanvas();
   }
 
   /** Sets up the key bindings for game over state. */
@@ -41,43 +84,5 @@ public class GameOverController implements Controller {
     inputHandler.bindKey(
         KeyEvent.VK_ESCAPE,
         new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void enter() {
-    setupKeyBindings();
-    LOGGER.info("Entering game over state");
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void exit() {
-    inputHandler.clearBindings();
-    LOGGER.info("Exiting game over state");
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void update(final float deltaTime) {
-    // Game over doesn't need updates
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void render() {
-    view.render();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void handleInput(final int keyCode) {
-    inputHandler.handleKeyPress(keyCode);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public Canvas getCanvas() {
-    return view.getCanvas();
   }
 }
