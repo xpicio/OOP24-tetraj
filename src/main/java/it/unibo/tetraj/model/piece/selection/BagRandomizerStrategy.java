@@ -10,9 +10,18 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Bag randomizer strategy for piece selection. Ensures each tetromino type appears exactly once
- * before the bag is refilled. This provides more balanced gameplay compared to pure random
- * selection.
+ * Bag randomizer strategy implementing the official Tetris Guideline "Random Generator" system.
+ * Also known as the "7-bag" randomizer, standard in all licensed Tetris games since 2001.
+ *
+ * <p>Places all 7 tetromino types into a bag, shuffles them, then deals them out. When empty,
+ * refills and reshuffles. This ensures:
+ *
+ * <ul>
+ *   <li>Each piece appears exactly once every 7 pieces
+ *   <li>Maximum gap between identical pieces: 12 (first in bag N, last in bag N+1)
+ *   <li>Minimum gap between identical pieces: 0 (consecutive pieces possible!)
+ *   <li>Average gap between identical pieces: 6
+ * </ul>
  */
 public final class BagRandomizerStrategy implements PieceSelectionStrategy {
 

@@ -2,7 +2,9 @@ package it.unibo.tetraj.model;
 
 import it.unibo.tetraj.model.piece.AbstractTetromino;
 import it.unibo.tetraj.model.piece.TetrominoFactory;
-import it.unibo.tetraj.model.piece.selection.BagRandomizerStrategy;
+import it.unibo.tetraj.model.piece.selection.PieceSelectionFactory;
+import it.unibo.tetraj.model.speed.SpeedStrategy;
+import it.unibo.tetraj.model.speed.SpeedStrategyFactory;
 import it.unibo.tetraj.util.ResourceManager;
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +14,8 @@ import java.util.function.Consumer;
 public final class PlayModel {
 
   private static final int[] LINE_POINTS = {0, 100, 300, 500, 800};
-  private static final double BASE_FALL_SPEED = 1000;
-  private static final double SPEED_MULTIPLIER = 0.9;
   private final TetrominoFactory tetrominoFactory;
+  private final SpeedStrategy speedStrategy;
   private final Board board;
   private final ResourceManager resources;
   private AbstractTetromino<?> currentPiece;
@@ -32,7 +33,8 @@ public final class PlayModel {
   /** Creates a new play model. */
   public PlayModel() {
     board = new Board();
-    tetrominoFactory = new TetrominoFactory(new BagRandomizerStrategy());
+    tetrominoFactory = new TetrominoFactory(PieceSelectionFactory.create());
+    speedStrategy = SpeedStrategyFactory.create();
     resources = ResourceManager.getInstance();
     startNewGame();
   }
@@ -44,7 +46,7 @@ public final class PlayModel {
     level = 1;
     linesCleared = 0;
     fallTimer = 0;
-    fallSpeed = BASE_FALL_SPEED;
+    fallSpeed = speedStrategy.getFallSpeed(0);
     canHold = true;
     heldPiece = null;
     gameOver = false;
@@ -108,6 +110,7 @@ public final class PlayModel {
       placePiece();
       return true;
     }
+
     return false;
   }
 
@@ -118,13 +121,13 @@ public final class PlayModel {
     }
 
     int dropDistance = 0;
+
     while (board.isValidPosition(currentPiece)) {
       currentPiece.move(0, 1);
       dropDistance++;
     }
     currentPiece.move(0, -1);
     dropDistance--;
-
     score += dropDistance * 2;
     placePiece();
     resources.playSound("drop.wav");
@@ -151,7 +154,6 @@ public final class PlayModel {
     }
 
     canHold = false;
-
     if (heldPiece == null) {
       heldPiece = currentPiece;
       currentPiece = nextPiece;
@@ -212,6 +214,7 @@ public final class PlayModel {
     }
 
     final AbstractTetromino<?> ghost = currentPiece.copy();
+
     while (board.isValidPosition(ghost)) {
       ghost.move(0, 1);
     }
@@ -324,6 +327,7 @@ public final class PlayModel {
     board.placeTetromino(currentPiece);
 
     final List<Integer> clearedLines = board.clearCompletedLines();
+
     if (!clearedLines.isEmpty()) {
       updateScore(clearedLines.size());
       if (clearedLines.size() == 4) {
@@ -332,13 +336,11 @@ public final class PlayModel {
         resources.playSound("clear.wav");
       }
     }
-
     currentPiece = nextPiece;
     nextPiece = tetrominoFactory.create();
     centerPieceToTop(nextPiece);
     canHold = true;
     fallTimer = 0;
-
     if (!board.isValidPosition(currentPiece)) {
       gameOver = true;
     }
@@ -349,9 +351,10 @@ public final class PlayModel {
     score += LINE_POINTS[Math.min(lines, LINE_POINTS.length - 1)] * level;
 
     final int newLevel = (linesCleared / 10) + 1;
+
     if (newLevel > level) {
       level = newLevel;
-      fallSpeed = BASE_FALL_SPEED * Math.pow(SPEED_MULTIPLIER, level - 1);
+      fallSpeed = speedStrategy.getFallSpeed(level - 1);
       resources.playSound("levelUp.wav");
     }
   }
