@@ -1,5 +1,6 @@
 package it.unibo.tetraj.command;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.ApplicationContext;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
@@ -15,6 +16,9 @@ public class QuitCommand implements Command {
    *
    * @param applicationContext The application context
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP2",
+      justification = "ApplicationContext is intentionally shared for shutdown access")
   public QuitCommand(final ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
   }

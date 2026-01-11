@@ -1,5 +1,6 @@
 package it.unibo.tetraj.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.model.piece.AbstractTetromino;
 import it.unibo.tetraj.model.piece.TetrominoFactory;
 import it.unibo.tetraj.model.piece.selection.PieceSelectionFactory;
@@ -172,6 +173,10 @@ public final class PlayModel {
    *
    * @return The game board
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP",
+      justification =
+          "Board needs to be exposed for rendering by View layer. View is trusted to only read board state")
   public Board getBoard() {
     return board;
   }

@@ -1,5 +1,6 @@
 package it.unibo.tetraj.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.GameSession;
 import java.awt.image.BufferedImage;
 import java.time.Duration;
@@ -38,6 +39,9 @@ public final class GameOverModel {
    *
    * @return The background image to display behind game over screen
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP",
+      justification = "Performance optimization. GameOverView only reads the image for rendering")
   public BufferedImage getBackgroundImage() {
     return lastFrame;
   }

@@ -1,5 +1,6 @@
 package it.unibo.tetraj;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.controller.Controller;
 import it.unibo.tetraj.controller.GameOverController;
 import it.unibo.tetraj.controller.MenuController;
@@ -62,16 +63,12 @@ public final class ApplicationContext {
     LOGGER.info("Java Version: " + System.getProperty("java.version"));
     LOGGER.info("OS: " + System.getProperty("os.name"));
     LOGGER.info(SEPARATOR);
-
     // Register shutdown hook to handle SIGINT and SIGTERM signals
     addShutdownHook();
-
     // Set system look and feel
     setupLookAndFeel();
-
     // Create and wire all components
     setupGameComponents();
-
     // Start the game engine
     SwingUtilities.invokeLater(
         () -> {
@@ -96,46 +93,39 @@ public final class ApplicationContext {
   /** Sets up all game components and wires them together. */
   private void setupGameComponents() {
     LOGGER.info("Initializing game components...");
-
     // Create state manager
     stateManager = new GameStateManager();
-
     // Create all controllers
     final Controller menuController = new MenuController(this);
     final Controller playController = new PlayController(this);
     final Controller gameOverController = new GameOverController(this);
-
     // Register controllers with state manager
     stateManager.registerController(GameState.MENU, menuController);
     stateManager.registerController(GameState.PLAYING, playController);
     stateManager.registerController(GameState.GAME_OVER, gameOverController);
-
     // Create game engine with configured state manager
     gameEngine = new GameEngine(stateManager);
-
     LOGGER.info("Game components initialized successfully");
   }
 
-  /** Performs graceful shutdown sequence. */
+  /** Performs graceful shutdown sequence. Closes resources and exits the JVM. */
+  @SuppressFBWarnings(
+      value = "DM_EXIT",
+      justification = "This is a shutdown method. Shutting down is literally its job.")
   private void gracefulShutdown() {
-    LOGGER.info("Performing graceful shutdown...");
+    final ResourceManager resourceManager = ResourceManager.getInstance();
 
+    LOGGER.info("Performing graceful shutdown...");
     // Stop game engine
     if (gameEngine != null) {
       gameEngine.stop();
     }
-
     // Any additional cleanup here
     LOGGER.info("Releasing resources...");
-
     // Cleanup resources
-    final ResourceManager resourceManager = ResourceManager.getInstance();
     resourceManager.clearCaches();
-
     LOGGER.info("Shutdown complete. Bye!");
-
     LoggerFactory.flushAll();
-
     if (!fromShutdownHook) {
       System.exit(0);
     }
@@ -150,7 +140,6 @@ public final class ApplicationContext {
             new Thread(
                 () -> {
                   LOGGER.info("Termination signal received (SIGINT or SIGTERM)");
-
                   final Thread watchdog =
                       new Thread(
                           () -> {
@@ -165,7 +154,6 @@ public final class ApplicationContext {
                           });
                   watchdog.setDaemon(true);
                   watchdog.start();
-
                   applicationContext.shutdown(true);
                 }));
   }

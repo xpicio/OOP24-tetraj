@@ -1,5 +1,6 @@
 package it.unibo.tetraj.controller;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.ApplicationContext;
 import it.unibo.tetraj.GameSession;
 import it.unibo.tetraj.GameState;
@@ -31,6 +32,9 @@ public final class PlayController implements Controller {
    *
    * @param applicationContext The application context
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP2",
+      justification = "ApplicationContext is a shared singleton service")
   public PlayController(final ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
     resources = ResourceManager.getInstance();

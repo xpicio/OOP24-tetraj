@@ -1,5 +1,6 @@
 package it.unibo.tetraj.controller;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.ApplicationContext;
 import it.unibo.tetraj.GameSession;
 import it.unibo.tetraj.GameState;
@@ -11,6 +12,7 @@ import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.view.GameOverView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
+import java.util.Optional;
 
 /** Controller for the game over state. Handles game over logic and input. */
 public class GameOverController implements Controller {
@@ -19,13 +21,16 @@ public class GameOverController implements Controller {
   private final GameOverView view;
   private final InputHandler inputHandler;
   private final ApplicationContext applicationContext;
-  private GameOverModel model;
+  private Optional<GameOverModel> model = Optional.empty();
 
   /**
    * Creates a new game over controller.
    *
    * @param applicationContext The application context
    */
+  @SuppressFBWarnings(
+      value = "EI_EXPOSE_REP2",
+      justification = "ApplicationContext is a shared singleton service")
   public GameOverController(final ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
     view = new GameOverView();
@@ -35,7 +40,7 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter(final GameSession gameSession) {
-    model = new GameOverModel(gameSession);
+    model = Optional.of(new GameOverModel(gameSession));
     setupKeyBindings();
     LOGGER.info("Entering game over state");
   }
@@ -43,7 +48,8 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public GameSession exit() {
-    final GameSession gameSession = model.getGameSession();
+    final GameSession gameSession =
+        model.map(GameOverModel::getGameSession).orElse(GameSession.empty());
     inputHandler.clearBindings();
     LOGGER.info(String.format("Exiting game over state with %s", gameSession));
     return gameSession;
@@ -58,7 +64,7 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void render() {
-    view.render(model);
+    view.render(model.get());
   }
 
   /** {@inheritDoc} */

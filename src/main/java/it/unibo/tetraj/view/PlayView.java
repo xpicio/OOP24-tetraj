@@ -138,6 +138,7 @@ public final class PlayView {
     private static final int GAME_INFO_PANEL_WIDTH = 200;
     private static final int INFO_BLOCK_SPACING = 35;
     private static final int NEXT_HOLD_SPACING = 115;
+    private final Board board;
     private final int boardWidthCells;
     private final int boardHeightCells;
     private final int boardPixelWidth;
@@ -159,6 +160,7 @@ public final class PlayView {
      * @param board The game board to base calculations on
      */
     BoardRenderer(final Board board) {
+      this.board = board;
       // Calculate pixel dimensions for board
       boardWidthCells = board.getWidth();
       boardHeightCells = board.getHeight();
@@ -191,7 +193,7 @@ public final class PlayView {
      * @param model The game model to render
      */
     void render(final Graphics2D g, final PlayModel model) {
-      drawBoard(g, model.getBoard());
+      drawBoard(g);
       drawGhostPiece(g, model.getGhostPiece());
       drawCurrentPiece(g, model.getCurrentPiece());
       drawNextPiece(g, model.getNextPiece());
@@ -200,7 +202,7 @@ public final class PlayView {
       drawPause(g, model);
     }
 
-    private void drawBoard(final Graphics2D g, final Board board) {
+    private void drawBoard(final Graphics2D g) {
       // Board background
       g.setColor(BOARD_BACKGROUND_COLOR);
       g.fillRect(boardX, boardY, boardPixelWidth, boardPixelHeight);
