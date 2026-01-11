@@ -9,6 +9,7 @@ import it.unibo.tetraj.command.StateTransitionCommand;
 import it.unibo.tetraj.model.GameOverModel;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
+import it.unibo.tetraj.util.ResourceManager;
 import it.unibo.tetraj.view.GameOverView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
@@ -18,9 +19,10 @@ import java.util.Optional;
 public class GameOverController implements Controller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GameOverController.class);
+  private final ApplicationContext applicationContext;
+  private final ResourceManager resources;
   private final GameOverView view;
   private final InputHandler inputHandler;
-  private final ApplicationContext applicationContext;
   private Optional<GameOverModel> model = Optional.empty();
 
   /**
@@ -33,6 +35,7 @@ public class GameOverController implements Controller {
       justification = "ApplicationContext is a shared singleton service")
   public GameOverController(final ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
+    resources = ResourceManager.getInstance();
     view = new GameOverView();
     inputHandler = new InputHandler();
   }
@@ -40,6 +43,7 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter(final GameSession gameSession) {
+    resources.playSound("gameOver.wav");
     model = Optional.of(new GameOverModel(gameSession));
     setupKeyBindings();
     LOGGER.info("Entering game over state");

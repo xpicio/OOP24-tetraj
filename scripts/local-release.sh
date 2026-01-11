@@ -9,6 +9,10 @@ set -e
 VERSION=${1:-"1.0.0-SNAPSHOT"}
 echo "Building Tetraj release $VERSION"
 
+# Auto-format all Java files using Google Java Format via Spotless
+echo "Running spotlessApply to format code..."
+./gradlew spotlessApply --no-daemon
+
 # Build shadowJar
 echo "Building shadow JAR..."
 ./gradlew shadowJar --no-daemon
