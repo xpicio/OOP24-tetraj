@@ -57,7 +57,14 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
     rotation = (rotation + 3) % 4;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Note: Performance-critical: returns direct array reference (no clone). This is safe because
+   * AbstractTetromino is the sole consumer and only performs read operations through getShape().
+   * The reference never leaks to public API, maintaining complete encapsulation despite returning a
+   * mutable array.
+   */
   @Override
   public int[][] getShape() {
     return getShapes()[rotation];

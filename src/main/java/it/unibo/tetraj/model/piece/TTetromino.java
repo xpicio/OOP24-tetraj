@@ -35,14 +35,7 @@ public final class TTetromino extends AbstractTetromino<TTetromino> {
     super(other);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @implNote Performance-critical: returns direct array reference (no clone). This is safe because
-   *     AbstractTetromino is the sole consumer and only performs read operations through
-   *     getShape(). The reference never leaks to public API, maintaining complete encapsulation
-   *     despite returning a mutable array.
-   */
+  /** {@inheritDoc} */
   @Override
   @SuppressWarnings("PMD.MethodReturnsInternalArray")
   protected int[][][] getShapes() {

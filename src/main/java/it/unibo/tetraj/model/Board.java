@@ -9,8 +9,8 @@ import java.util.List;
 /** Represents the Tetris game board. Standard Tetris board is 10 cells wide and 20 cells high. */
 public final class Board {
 
-  public static final int STANDARD_WIDTH = 10;
-  public static final int STANDARD_HEIGHT = 20;
+  private static final int STANDARD_WIDTH = 10;
+  private static final int STANDARD_HEIGHT = 20;
   private final int width;
   private final int height;
   private final Color[][] cells;
