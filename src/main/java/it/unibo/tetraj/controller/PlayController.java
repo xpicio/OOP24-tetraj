@@ -97,6 +97,39 @@ public final class PlayController implements Controller {
     return view.getCanvas();
   }
 
+  /**
+   * Sets up the key bindings for the paused state. Disables gameplay controls and restricts input
+   * to resume commands (e.g. P, ESC).
+   */
+  private void setupKeyBindingsOnPause() {
+    // P to pause playing
+    inputHandler.bindKey(
+        KeyEvent.VK_P,
+        () -> {
+          if (!model.isPaused()) {
+            inputHandler.clearBindings();
+            setupKeyBindingsOnPause();
+          } else {
+            inputHandler.clearBindings();
+            setupKeyBindings();
+          }
+          new PlayCommand(model, PlayModel::togglePause, "togglePause").execute();
+        });
+    // ESC to quit playing or resume pause
+    inputHandler.bindKey(
+        KeyEvent.VK_ESCAPE,
+        () -> {
+          if (model.isPaused()) {
+            inputHandler.clearBindings();
+            setupKeyBindings();
+            model.togglePause();
+          } else {
+            new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU)
+                .execute();
+          }
+        });
+  }
+
   /** Sets up the key bindings for playing state. */
   private void setupKeyBindings() {
     // LEFT or A to move piece left
@@ -128,19 +161,7 @@ public final class PlayController implements Controller {
     inputHandler.bindKey(
         KeyEvent.VK_SHIFT, new PlayCommand(model, PlayModel::holdPiece, "holdPiece"));
     inputHandler.bindKey(KeyEvent.VK_C, new PlayCommand(model, PlayModel::holdPiece, "holdPiece"));
-    // P to pause playing
-    inputHandler.bindKey(
-        KeyEvent.VK_P, new PlayCommand(model, PlayModel::togglePause, "togglePause"));
-    // ESC to quit playing or resume pause
-    inputHandler.bindKey(
-        KeyEvent.VK_ESCAPE,
-        () -> {
-          if (model.isPaused()) {
-            model.togglePause();
-          } else {
-            new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU)
-                .execute();
-          }
-        });
+    // P and ESC for pause
+    setupKeyBindingsOnPause();
   }
 }
