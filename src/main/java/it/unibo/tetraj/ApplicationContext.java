@@ -21,10 +21,30 @@ public final class ApplicationContext {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
   private static final String SEPARATOR = "========================================";
   private static final String TITLE = "      TETRAJ - A Java Tetris Clone      ";
+  private static final ApplicationContext INSTANCE = new ApplicationContext();
   private GameEngine gameEngine;
   private GameStateManager stateManager;
   private volatile boolean shutdownRequested;
   private volatile boolean fromShutdownHook;
+
+  /** Private constructor for singleton pattern. */
+  private ApplicationContext() {
+    // Singleton
+  }
+
+  /**
+   * Gets the singleton instance.
+   *
+   * @return The ApplicationContext instance
+   */
+  @SuppressFBWarnings(
+      value = "MS_EXPOSE_REP",
+      justification =
+          "ApplicationContext is the main application singleton. "
+              + "Mutable state is required for game lifecycle management.")
+  public static ApplicationContext getInstance() {
+    return INSTANCE;
+  }
 
   /**
    * Gets the state manager.

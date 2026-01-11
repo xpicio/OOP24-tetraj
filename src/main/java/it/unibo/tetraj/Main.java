@@ -25,7 +25,7 @@ public final class Main {
   public static void main(final String[] args) {
     configureApplicationProperties();
 
-    final ApplicationContext applicationContext = new ApplicationContext();
+    final ApplicationContext applicationContext = ApplicationContext.getInstance();
     applicationContext.bootstrap();
   }
 

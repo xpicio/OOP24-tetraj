@@ -56,22 +56,17 @@ public final class GameEngine implements Runnable {
   public void start() {
     if (!running) {
       running = true;
-
       // Preload other resources for faster game start
       resourceManager = ResourceManager.getInstance();
       resourceManager.preloadResources();
-
       // Start with menu state
       stateManager.switchTo(GameState.MENU);
       updateCanvas();
-
       // Show window
       window.setVisible(true);
-
       // Start game thread
       gameThread = new Thread(this, "GameThread");
       gameThread.start();
-
       LOGGER.info("Game engine started");
     }
   }
@@ -81,9 +76,7 @@ public final class GameEngine implements Runnable {
     if (running) {
       running = false;
       LOGGER.info("Stopping game engine...");
-
       resourceManager.clearCaches();
-
       // Wait for thread to finish
       try {
         if (gameThread != null) {
@@ -93,7 +86,6 @@ public final class GameEngine implements Runnable {
         LOGGER.warn("Interrupted while waiting for game thread");
         Thread.currentThread().interrupt();
       }
-
       // Dispose window
       window.dispose();
       LOGGER.info("Game engine stopped");
@@ -103,31 +95,24 @@ public final class GameEngine implements Runnable {
   /** {@inheritDoc} */
   @Override
   public void run() {
-    LOGGER.info("Game loop started");
-
     // Track last state for canvas updates
     GameState lastState = stateManager.getCurrentState();
-
     // Flag to track if canvas is ready
     boolean canvasReady = true;
-
     long lastTime = System.nanoTime();
 
+    LOGGER.info("Game loop started");
     while (running) {
       final long now = System.nanoTime();
       final long updateLength = now - lastTime;
       lastTime = now;
-
       final float deltaTime = (float) (updateLength * NANO_TO_SEC);
-
-      // Check if state changed
       final GameState currentState = stateManager.getCurrentState();
+
       if (currentState != lastState) {
         LOGGER.info("State changed from " + lastState + " to " + currentState);
-
         // Mark canvas as not ready
         canvasReady = false;
-
         // Update canvas synchronously on EDT and wait
         try {
           SwingUtilities.invokeAndWait(this::updateCanvas);
@@ -140,10 +125,8 @@ public final class GameEngine implements Runnable {
         } catch (final java.lang.reflect.InvocationTargetException ex) {
           LOGGER.warn("Error in canvas update: {}", ex.getCause().getMessage());
         }
-
         lastState = currentState;
       }
-
       // Update and render current controller directly
       if (currentController != null && canvasReady) {
         currentController.update(deltaTime);
@@ -152,6 +135,7 @@ public final class GameEngine implements Runnable {
 
       // Sleep to maintain target FPS
       final long sleepTime = (lastTime - System.nanoTime() + OPTIMAL_TIME) / 1_000_000;
+
       if (sleepTime > 0) {
         try {
           Thread.sleep(sleepTime);
@@ -162,7 +146,6 @@ public final class GameEngine implements Runnable {
         }
       }
     }
-
     LOGGER.info("Game loop ended");
   }
 
@@ -175,12 +158,11 @@ public final class GameEngine implements Runnable {
     // Get title from properties
     final String title = applicationProperties.getAppTitle();
     final JFrame frame = new JFrame(title);
+
     frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     frame.setResizable(false);
-
     // Set dark background to avoid white flash
     frame.getContentPane().setBackground(BACKGROUND_COLOR);
-
     // Window close handler
     frame.addWindowListener(
         new WindowAdapter() {
@@ -189,7 +171,6 @@ public final class GameEngine implements Runnable {
             stop();
           }
         });
-
     return frame;
   }
 
@@ -211,17 +192,14 @@ public final class GameEngine implements Runnable {
         currentCanvas.removeKeyListener(listener);
       }
     }
-
     // Add new canvas
     currentCanvas = newCanvas;
     window.add(currentCanvas);
     window.pack();
-
     // Center window on screen (must be after pack!)
     if (!window.isVisible()) {
       window.setLocationRelativeTo(null);
     }
-
     // Add key listener to new canvas
     currentCanvas.addKeyListener(
         new KeyAdapter() {
@@ -232,7 +210,6 @@ public final class GameEngine implements Runnable {
             }
           }
         });
-
     // Request focus
     SwingUtilities.invokeLater(
         () -> {
