@@ -1,5 +1,7 @@
 package it.unibo.tetraj;
 
+import it.unibo.tetraj.model.leaderboard.PlayerProfile;
+import it.unibo.tetraj.model.leaderboard.PlayerProfileManager;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.time.Duration;
@@ -13,6 +15,7 @@ import java.util.Optional;
  */
 public final class GameSession {
 
+  private final PlayerProfile playerProfile;
   private final Integer score;
   private final Integer level;
   private final Integer linesCleared;
@@ -24,6 +27,7 @@ public final class GameSession {
    * Creates a new game session with the specified values. Validates input and creates defensive
    * copies where needed.
    *
+   * @param playerProfile The player profile containing ID and nickname
    * @param score The score achieved
    * @param level The level reached
    * @param linesCleared Number of lines cleared
@@ -32,6 +36,7 @@ public final class GameSession {
    * @param gameEndTime When the game ended
    */
   public GameSession(
+      final PlayerProfile playerProfile,
       final Integer score,
       final Integer level,
       final Integer linesCleared,
@@ -49,6 +54,7 @@ public final class GameSession {
       throw new IllegalArgumentException("Lines cleared cannot be negative");
     }
 
+    this.playerProfile = PlayerProfileManager.getInstance().getProfile();
     this.score = score;
     this.level = level;
     this.linesCleared = linesCleared;
@@ -64,7 +70,8 @@ public final class GameSession {
    * @return An empty GameSession instance
    */
   public static GameSession empty() {
-    return new GameSession(null, null, null, null, null, null);
+    return new GameSession(
+        PlayerProfileManager.getInstance().getProfile(), null, null, null, null, null, null);
   }
 
   /**
@@ -95,6 +102,16 @@ public final class GameSession {
       return Duration.between(gameStartTime, gameEndTime);
     }
     return Duration.ZERO;
+  }
+
+  /**
+   * Gets the player profile associated with this game session. Contains the player's unique ID and
+   * nickname.
+   *
+   * @return The player profile (never null)
+   */
+  public PlayerProfile playerProfile() {
+    return playerProfile;
   }
 
   /**
@@ -239,7 +256,8 @@ public final class GameSession {
   @Override
   public String toString() {
     return String.format(
-        "GameSession[score=%d, level=%d, linesCleared=%d, lastFrame=%s, gameStartTime=%s, gameEndTime=%s]",
+        "GameSession[playerNickname=%s, score=%d, level=%d, linesCleared=%d, lastFrame=%s, gameStartTime=%s, gameEndTime=%s]",
+        playerProfile.nickname(),
         score,
         level,
         linesCleared,
@@ -405,7 +423,14 @@ public final class GameSession {
      * @return A new GameSession instance with the builder's values
      */
     public GameSession build() {
-      return new GameSession(score, level, linesCleared, lastFrame, gameStartTime, gameEndTime);
+      return new GameSession(
+          PlayerProfileManager.getInstance().getProfile(),
+          score,
+          level,
+          linesCleared,
+          lastFrame,
+          gameStartTime,
+          gameEndTime);
     }
   }
 }

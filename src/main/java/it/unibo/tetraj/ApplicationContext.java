@@ -3,6 +3,7 @@ package it.unibo.tetraj;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.controller.Controller;
 import it.unibo.tetraj.controller.GameOverController;
+import it.unibo.tetraj.controller.LeaderboardController;
 import it.unibo.tetraj.controller.MenuController;
 import it.unibo.tetraj.controller.PlayController;
 import it.unibo.tetraj.util.Logger;
@@ -116,6 +117,7 @@ public final class ApplicationContext {
     // Create state manager
     stateManager = new GameStateManager();
     // Create all controllers
+    final Controller leaderboardController = new LeaderboardController(this);
     final Controller menuController = new MenuController(this);
     final Controller playController = new PlayController(this);
     final Controller gameOverController = new GameOverController(this);
