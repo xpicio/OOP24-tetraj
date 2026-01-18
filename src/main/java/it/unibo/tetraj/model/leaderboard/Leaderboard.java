@@ -18,27 +18,17 @@ public final class Leaderboard {
   private static final Logger LOGGER = LoggerFactory.getLogger(Leaderboard.class);
   private static final Leaderboard INSTANCE = new Leaderboard();
   private static final int REDIS_DEFAULT_PORT = 6379;
-  private final ApplicationProperties applicationProperties;
+
   private final List<StorageProvider> providers;
   private StorageProvider activeProvider;
 
-  private Leaderboard() {
-    applicationProperties = ApplicationProperties.getInstance();
-    // Select first available provider (Upstash Redis, local Redis, or JSON fallback)
-    providers =
-        List.of(
-            new RedisStorageProvider(
-                true,
-                applicationProperties.getProperty("storageProvider.redis.upstash.hostname"),
-                Integer.parseInt(
-                    applicationProperties.getProperty("storageProvider.redis.upstash.port")),
-                Optional.of(
-                    applicationProperties.getProperty("storageProvider.redis.upstash.username")),
-                Optional.of(
-                    applicationProperties.getProperty("storageProvider.redis.upstash.password"))),
-            new RedisStorageProvider(false, "localhost", REDIS_DEFAULT_PORT),
-            new JsonFileStorageProvider());
+  Leaderboard(final List<StorageProvider> providers) {
+    this.providers = providers;
     selectActiveProvider();
+  }
+
+  private Leaderboard() {
+    this(createDefaultProviders());
   }
 
   /**
@@ -126,6 +116,24 @@ public final class Leaderboard {
    */
   public String getActiveProviderName() {
     return activeProvider != null ? activeProvider.getName() : "None";
+  }
+
+  private static List<StorageProvider> createDefaultProviders() {
+    // Select first available provider (Upstash Redis, local Redis, or JSON fallback)
+    final ApplicationProperties applicationProperties = ApplicationProperties.getInstance();
+
+    return List.of(
+        new RedisStorageProvider(
+            true,
+            applicationProperties.getProperty("storageProvider.redis.upstash.hostname"),
+            Integer.parseInt(
+                applicationProperties.getProperty("storageProvider.redis.upstash.port")),
+            Optional.of(
+                applicationProperties.getProperty("storageProvider.redis.upstash.username")),
+            Optional.of(
+                applicationProperties.getProperty("storageProvider.redis.upstash.password"))),
+        new RedisStorageProvider(false, "localhost", REDIS_DEFAULT_PORT),
+        new JsonFileStorageProvider());
   }
 
   /** Selects the first available provider from the chain. Called once at initialization. */

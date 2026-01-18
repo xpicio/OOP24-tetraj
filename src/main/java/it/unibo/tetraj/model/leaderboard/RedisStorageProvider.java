@@ -73,11 +73,14 @@ public final class RedisStorageProvider implements StorageProvider {
       final Optional<String> username,
       final Optional<String> password) {
     final String scheme = ssl ? "rediss" : "redis";
+    final String userAuthentication =
+        password.isPresent()
+            ? String.format("%s:%s", username.orElse("default"), password.get())
+            : username.orElse("default");
 
     isAvailable = false;
     this.hostname = hostname;
-    connectionString =
-        String.format("%s://%s@%s:%d", scheme, username.orElse("default"), hostname, port);
+    connectionString = String.format("%s://%s@%s:%d", scheme, userAuthentication, hostname, port);
 
     final var configBuilder =
         DefaultJedisClientConfig.builder()
@@ -130,7 +133,9 @@ public final class RedisStorageProvider implements StorageProvider {
    */
   @Override
   public String getName() {
-    return String.format("Redis (%s)", connectionString.replaceAll(":[^:@]*@", ":***@"));
+    // Mask password: match "://username:password@" and replace with "://username:***@"
+    return String.format(
+        "Redis (%s)", connectionString.replaceAll("(://[^:]+):([^@]+)@", "$1:***@"));
   }
 
   /**
