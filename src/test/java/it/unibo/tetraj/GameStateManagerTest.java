@@ -28,6 +28,7 @@ class GameStateManagerTest {
   @Mock private Controller menuController;
   @Mock private Controller playController;
   @Mock private Controller gameOverController;
+  @Mock private Controller leaderboardController;
 
   @BeforeEach
   void setUp() {
@@ -38,6 +39,7 @@ class GameStateManagerTest {
     stateManager.registerController(GameState.MENU, menuController);
     stateManager.registerController(GameState.PLAYING, playController);
     stateManager.registerController(GameState.GAME_OVER, gameOverController);
+    stateManager.registerController(GameState.LEADERBOARD, leaderboardController);
   }
 
   @Test
@@ -242,6 +244,7 @@ class GameStateManagerTest {
 
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.MENU, GameState.PLAYING));
+    assertTrue(stateManager.isValidTransition(GameState.MENU, GameState.LEADERBOARD));
     assertFalse(stateManager.isValidTransition(GameState.MENU, GameState.GAME_OVER));
     assertFalse(stateManager.isValidTransition(GameState.MENU, GameState.MENU));
   }
@@ -270,5 +273,70 @@ class GameStateManagerTest {
     final var inOrder = org.mockito.Mockito.inOrder(menuController, playController);
     inOrder.verify(menuController).exit();
     inOrder.verify(playController).enter(null);
+  }
+
+  @Test
+  @DisplayName("should validate all transitions from LEADERBOARD state")
+  void shouldValidateAllTransitionsFromLeaderboardState() {
+    // Arrange - done in setUp()
+
+    // Act & Assert
+    assertTrue(stateManager.isValidTransition(GameState.LEADERBOARD, GameState.MENU));
+    assertFalse(stateManager.isValidTransition(GameState.LEADERBOARD, GameState.PLAYING));
+    assertFalse(stateManager.isValidTransition(GameState.LEADERBOARD, GameState.GAME_OVER));
+    assertFalse(stateManager.isValidTransition(GameState.LEADERBOARD, GameState.LEADERBOARD));
+  }
+
+  @Test
+  @DisplayName("should allow valid transition from MENU to LEADERBOARD")
+  void shouldAllowValidTransitionFromMenuToLeaderboard() {
+    // Arrange
+    stateManager.switchTo(GameState.MENU);
+    reset(menuController, leaderboardController);
+
+    // Act
+    final boolean result = stateManager.switchTo(GameState.LEADERBOARD);
+
+    // Assert
+    assertTrue(result, "Should allow transition from MENU to LEADERBOARD");
+    assertEquals(GameState.LEADERBOARD, stateManager.getCurrentState());
+    verify(menuController, times(1)).exit();
+    verify(leaderboardController, times(1)).enter(null);
+  }
+
+  @Test
+  @DisplayName("should allow valid transition from LEADERBOARD to MENU")
+  void shouldAllowValidTransitionFromLeaderboardToMenu() {
+    // Arrange
+    stateManager.switchTo(GameState.MENU);
+    stateManager.switchTo(GameState.LEADERBOARD);
+    reset(leaderboardController, menuController);
+
+    // Act
+    final boolean result = stateManager.switchTo(GameState.MENU);
+
+    // Assert
+    assertTrue(result, "Should allow transition from LEADERBOARD to MENU");
+    assertEquals(GameState.MENU, stateManager.getCurrentState());
+    verify(leaderboardController, times(1)).exit();
+    verify(menuController, times(1)).enter(null);
+  }
+
+  @Test
+  @DisplayName("should not allow invalid transition from LEADERBOARD to PLAYING")
+  void shouldNotAllowInvalidTransitionFromLeaderboardToPlaying() {
+    // Arrange
+    stateManager.switchTo(GameState.MENU);
+    stateManager.switchTo(GameState.LEADERBOARD);
+    reset(leaderboardController, playController);
+
+    // Act
+    final boolean result = stateManager.switchTo(GameState.PLAYING);
+
+    // Assert
+    assertFalse(result, "Should not allow transition from LEADERBOARD to PLAYING");
+    assertEquals(GameState.LEADERBOARD, stateManager.getCurrentState());
+    verify(leaderboardController, never()).exit();
+    verifyNoInteractions(playController);
   }
 }

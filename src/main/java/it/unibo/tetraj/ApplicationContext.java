@@ -138,6 +138,7 @@ public final class ApplicationContext {
     stateManager.registerController(GameState.MENU, menuController);
     stateManager.registerController(GameState.PLAYING, playController);
     stateManager.registerController(GameState.GAME_OVER, gameOverController);
+    stateManager.registerController(GameState.LEADERBOARD, leaderboardController);
     // Create game engine with configured state manager
     gameEngine = new GameEngine(stateManager);
     LOGGER.info("Game components initialized successfully");

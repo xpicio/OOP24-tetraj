@@ -108,15 +108,17 @@ public class GameStateManager {
   }
 
   /**
-   * Initializes the valid state transitions. MENU -> PLAYING, PLAYING -> GAME_OVER, MENU MENU,
-   * GAME_OVER -> MENU, PLAYING
+   * Initializes the valid state transitions. MENU -> PLAYING, LEADERBOARD PLAYING -> GAME_OVER,
+   * MENU MENU, GAME_OVER -> MENU, PLAYING LEADERBOARD -> MENU
    */
   private void initializeValidTransitions() {
     // From MENU
-    validTransitions.put(GameState.MENU, EnumSet.of(GameState.PLAYING));
+    validTransitions.put(GameState.MENU, EnumSet.of(GameState.PLAYING, GameState.LEADERBOARD));
     // From PLAYING
     validTransitions.put(GameState.PLAYING, EnumSet.of(GameState.GAME_OVER, GameState.MENU));
     // From GAME_OVER
     validTransitions.put(GameState.GAME_OVER, EnumSet.of(GameState.MENU, GameState.PLAYING));
+    // From LEADERBOARD
+    validTransitions.put(GameState.LEADERBOARD, EnumSet.of(GameState.MENU));
   }
 }

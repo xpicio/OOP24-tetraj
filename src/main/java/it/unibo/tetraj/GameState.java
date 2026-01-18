@@ -7,5 +7,7 @@ public enum GameState {
   /** Active gameplay state. */
   PLAYING,
   /** Game over screen state. */
-  GAME_OVER
+  GAME_OVER,
+  /** Leaderboard screen state. */
+  LEADERBOARD
 }

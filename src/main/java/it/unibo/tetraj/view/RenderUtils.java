@@ -6,6 +6,7 @@ import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 import java.util.List;
@@ -109,6 +110,50 @@ public final class RenderUtils {
     final FontMetrics fm = g.getFontMetrics();
     final int x = (canvasWidth - fm.stringWidth(text)) / 2;
     g.drawString(text, x, y);
+  }
+
+  /**
+   * Draws a background image scaled to cover the entire canvas with a semi-transparent overlay. The
+   * image is scaled proportionally to fill the canvas (like CSS background-size: cover).
+   *
+   * @param g The graphics context
+   * @param backgroundImage The background image to draw
+   * @param windowWidth The width of the canvas
+   * @param windowHeight The height of the canvas
+   * @param overlayAlpha The transparency of the overlay (0-1, where 0 is transparent and 1 is
+   *     opaque)
+   */
+  public static void drawBackgroundWithOverlay(
+      final Graphics2D g,
+      final Image backgroundImage,
+      final int windowWidth,
+      final int windowHeight,
+      final float overlayAlpha) {
+    if (backgroundImage == null) {
+      return;
+    }
+
+    // Calculate scale factor to cover the entire screen (like CSS: background-size: cover)
+    final int imgWidth = backgroundImage.getWidth(null);
+    final int imgHeight = backgroundImage.getHeight(null);
+    final double scale =
+        Math.max((double) windowWidth / imgWidth, (double) windowHeight / imgHeight);
+    // Calculate new dimensions keeping aspect ratio
+    final int newWidth = (int) (imgWidth * scale);
+    final int newHeight = (int) (imgHeight * scale);
+    final int x = (windowWidth - newWidth) / 2;
+    final int y = windowHeight - newHeight;
+    final Composite originalComposite = g.getComposite();
+
+    // Draw the background image
+    g.drawImage(backgroundImage, x, y, newWidth, newHeight, null);
+    // Add semi-transparent overlay for text readability
+    g.setComposite(
+        AlphaComposite.getInstance(
+            AlphaComposite.SRC_OVER, Math.min(MAX_ALPHA, Math.max(MIN_ALPHA, overlayAlpha))));
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, windowWidth, windowHeight);
+    g.setComposite(originalComposite);
   }
 
   /**

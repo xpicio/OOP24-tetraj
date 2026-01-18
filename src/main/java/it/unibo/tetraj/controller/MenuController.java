@@ -93,6 +93,14 @@ public class MenuController implements Controller {
           new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING)
               .execute();
         });
+    // L to view leaderboard
+    inputHandler.bindKey(
+        KeyEvent.VK_L,
+        () -> {
+          resources.playSound("menuSelect.wav");
+          new StateTransitionCommand(applicationContext.getStateManager(), GameState.LEADERBOARD)
+              .execute();
+        });
     // ESC to quit
     inputHandler.bindKey(KeyEvent.VK_ESCAPE, new QuitCommand(applicationContext));
   }
