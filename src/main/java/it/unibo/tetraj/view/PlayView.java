@@ -1,99 +1,42 @@
 package it.unibo.tetraj.view;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.model.Board;
 import it.unibo.tetraj.model.PlayModel;
 import it.unibo.tetraj.model.piece.AbstractTetromino;
-import it.unibo.tetraj.util.ApplicationProperties;
-import it.unibo.tetraj.util.ResourceManager;
-import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
 /** View for the playing state. Renders the Tetris game. */
-public final class PlayView {
+public final class PlayView extends AbstractView<PlayModel> {
 
-  private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final float BACKGROUND_OVERLAY_ALPHA = 0.80f;
-  private static final float TITLE_FONT_SIZE = 48f;
-  private static final float DEFAULT_FONT_SIZE = 18f;
   private static final int BOARD_CELL_SIZE = 30;
-  private final ApplicationProperties applicationProperties;
-  private final Canvas canvas;
-  private final ResourceManager resources;
-  private BufferStrategy bufferStrategy;
-  private Font gameFont;
   private BoardRenderer renderer;
-  private final int windowWidth;
-  private final int windowHeight;
 
   /** Creates a new play view. */
   public PlayView() {
-    applicationProperties = ApplicationProperties.getInstance();
-    windowWidth = applicationProperties.getWindowWidth();
-    windowHeight = applicationProperties.getWindowHeight();
-    canvas = new Canvas();
-    resources = ResourceManager.getInstance();
-    canvas.setPreferredSize(new Dimension(windowWidth, windowHeight));
-    canvas.setBackground(BACKGROUND_COLOR);
-    canvas.setFocusable(true);
-    loadFonts();
+    super();
   }
 
-  private void loadFonts() {
-    gameFont = resources.getPressStart2PFont(DEFAULT_FONT_SIZE);
-  }
-
-  private void initialize() {
-    if (bufferStrategy == null) {
-      canvas.createBufferStrategy(3);
-      bufferStrategy = canvas.getBufferStrategy();
-    }
-  }
-
-  /**
-   * Renders the play view with the game model.
-   *
-   * @param model The play model to render
-   */
-  public void render(final PlayModel model) {
-    if (bufferStrategy == null) {
-      initialize();
-      if (bufferStrategy == null) {
-        return;
-      }
-    }
-
+  /** {@inheritDoc} */
+  @Override
+  protected void renderContent(final PlayModel model) {
     // Lazy initialization of renderer with board dimensions
     if (renderer == null) {
       renderer = new BoardRenderer(model.getBoard());
     }
-    RenderUtils.renderWithGraphics(
-        bufferStrategy,
-        BACKGROUND_COLOR,
-        windowWidth,
-        windowHeight,
-        g -> {
-          renderer.render(g, model);
-        });
-  }
 
-  /**
-   * Gets the canvas.
-   *
-   * @return The canvas component
-   */
-  @SuppressFBWarnings(
-      value = "EI_EXPOSE_REP",
-      justification = "Canvas must be exposed for GameEngine to mount current view")
-  public Canvas getCanvas() {
-    return canvas;
+    final BoardRenderer localRenderer = renderer;
+
+    RenderUtils.renderWithGraphics(
+        getBufferStrategy(),
+        getBackgroundColor(),
+        getWindowWidth(),
+        getWindowHeight(),
+        g -> localRenderer.render(g, model));
   }
 
   /**
@@ -110,13 +53,13 @@ public final class PlayView {
     }
 
     final BufferedImage image =
-        new BufferedImage(windowWidth, windowHeight, BufferedImage.TYPE_INT_RGB);
+        new BufferedImage(getWindowWidth(), getWindowHeight(), BufferedImage.TYPE_INT_RGB);
     final Graphics2D g = image.createGraphics();
 
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     // Clear background
-    g.setColor(BACKGROUND_COLOR);
-    g.fillRect(0, 0, windowWidth, windowHeight);
+    g.setColor(getBackgroundColor());
+    g.fillRect(0, 0, getWindowWidth(), getWindowHeight());
     renderer.render(g, model);
     g.dispose();
     return image;
@@ -130,7 +73,7 @@ public final class PlayView {
     private static final Color BOARD_BACKGROUND_COLOR = new Color(10, 10, 15);
     private static final Color GRID_COLOR = new Color(40, 40, 50);
     private static final Color GHOST_PIECE_COLOR = new Color(255, 255, 255, 60);
-    private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
+    private static final Color BODY_TEXT_COLOR = Color.WHITE;
     private static final int TEXT_OFFSET = 20;
     private static final int SCORE_VALUE_OFFSET = 25;
     private static final int BOX_OFFSET = 10;
@@ -169,10 +112,10 @@ public final class PlayView {
 
       // Calculate centered board position
       final int totalContentWidth = boardPixelWidth + PADDING + GAME_INFO_PANEL_WIDTH;
-      final int contentStartX = (windowWidth - totalContentWidth) / 2;
+      final int contentStartX = (getWindowWidth() - totalContentWidth) / 2;
 
       boardX = contentStartX;
-      boardY = (windowHeight - boardPixelHeight) / 2;
+      boardY = (getWindowHeight() - boardPixelHeight) / 2;
       // Game info panel position
       gameInfoPanelX = boardX + boardPixelWidth + PADDING;
       // Next and hold positions aligned with board top
@@ -254,8 +197,8 @@ public final class PlayView {
     }
 
     private void drawNextPiece(final Graphics2D g, final AbstractTetromino<?> next) {
-      g.setColor(DEFAULT_TEXT_COLOR);
-      g.setFont(gameFont);
+      g.setColor(BODY_TEXT_COLOR);
+      g.setFont(getBodyFont());
       g.drawString("NEXT", gameInfoPanelX, nextY);
       if (next != null) {
         drawTetrominoPreview(g, next, gameInfoPanelX, nextBoxY);
@@ -263,8 +206,8 @@ public final class PlayView {
     }
 
     private void drawHeldPiece(final Graphics2D g, final AbstractTetromino<?> held) {
-      g.setColor(DEFAULT_TEXT_COLOR);
-      g.setFont(gameFont);
+      g.setColor(BODY_TEXT_COLOR);
+      g.setFont(getBodyFont());
       g.drawString("HOLD", gameInfoPanelX, holdY);
       if (held != null) {
         drawTetrominoPreview(g, held, gameInfoPanelX, holdBoxY);
@@ -307,8 +250,8 @@ public final class PlayView {
     }
 
     private void drawGameInfo(final Graphics2D g, final PlayModel model) {
-      g.setColor(DEFAULT_TEXT_COLOR);
-      g.setFont(gameFont);
+      g.setColor(BODY_TEXT_COLOR);
+      g.setFont(getBodyFont());
       // Score
       g.drawString("SCORE", gameInfoPanelX, scoreY);
       g.drawString(String.valueOf(model.getScore()), gameInfoPanelX, scoreY + SCORE_VALUE_OFFSET);
@@ -323,15 +266,15 @@ public final class PlayView {
 
     private void drawPause(final Graphics2D g, final PlayModel model) {
       if (model.isPaused()) {
-        RenderUtils.drawOverlay(g, windowWidth, windowHeight, BACKGROUND_OVERLAY_ALPHA);
-        g.setColor(DEFAULT_TEXT_COLOR);
-        g.setFont(gameFont);
+        RenderUtils.drawOverlay(g, getWindowWidth(), getWindowHeight(), BACKGROUND_OVERLAY_ALPHA);
+        g.setColor(BODY_TEXT_COLOR);
+        g.setFont(getBodyFont());
         RenderUtils.drawCenteredTextBlock(
             g,
             List.of("PAUSED", "Press P or ESC to resume"),
-            resources.getPressStart2PFont(TITLE_FONT_SIZE),
-            windowWidth,
-            windowHeight);
+            getH1Font(),
+            getWindowWidth(),
+            getWindowHeight());
       }
     }
   }
