@@ -86,22 +86,20 @@ public class MenuController implements Controller {
   /** Sets up the key bindings for menu state. */
   private void setupKeyBindings() {
     // ENTER to start playing
-    inputHandler.bindKey(
-        KeyEvent.VK_ENTER,
-        () -> {
-          resources.playSound("menuSelect.wav");
-          new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING)
-              .execute();
-        });
+    inputHandler.bindKey(KeyEvent.VK_ENTER, () -> transitionTo(GameState.PLAYING));
     // L to view leaderboard
-    inputHandler.bindKey(
-        KeyEvent.VK_L,
-        () -> {
-          resources.playSound("menuSelect.wav");
-          new StateTransitionCommand(applicationContext.getStateManager(), GameState.LEADERBOARD)
-              .execute();
-        });
+    inputHandler.bindKey(KeyEvent.VK_L, () -> transitionTo(GameState.LEADERBOARD));
     // ESC to quit
     inputHandler.bindKey(KeyEvent.VK_ESCAPE, new QuitCommand(applicationContext));
+  }
+
+  /**
+   * Plays menu selection sound and transitions to the specified state.
+   *
+   * @param state The target game state
+   */
+  private void transitionTo(final GameState state) {
+    resources.playSound("menuSelect.wav");
+    new StateTransitionCommand(applicationContext.getStateManager(), state).execute();
   }
 }

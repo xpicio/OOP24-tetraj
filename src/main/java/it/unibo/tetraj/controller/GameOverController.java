@@ -89,17 +89,20 @@ public class GameOverController implements Controller {
   /** Sets up the key bindings for game over state. */
   private void setupKeyBindings() {
     // ENTER to restart (play again)
-    inputHandler.bindKey(
-        KeyEvent.VK_ENTER,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
+    inputHandler.bindKey(KeyEvent.VK_ENTER, () -> transitionTo(GameState.PLAYING));
     // ESC to return to menu
-    inputHandler.bindKey(
-        KeyEvent.VK_ESCAPE,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
+    inputHandler.bindKey(KeyEvent.VK_ESCAPE, () -> transitionTo(GameState.MENU));
     // L to view leaderboard
-    inputHandler.bindKey(
-        KeyEvent.VK_L,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.LEADERBOARD));
+    inputHandler.bindKey(KeyEvent.VK_L, () -> transitionTo(GameState.LEADERBOARD));
+  }
+
+  /**
+   * Transitions to the specified game state.
+   *
+   * @param state The target game state
+   */
+  private void transitionTo(final GameState state) {
+    new StateTransitionCommand(applicationContext.getStateManager(), state).execute();
   }
 
   /**
