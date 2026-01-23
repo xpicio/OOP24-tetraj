@@ -13,7 +13,6 @@ import it.unibo.tetraj.util.ResourceManager;
 import it.unibo.tetraj.view.LeaderboardView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
-import java.util.Optional;
 
 /** Controller for the leaderboard state. Displays top scores and player information. */
 public final class LeaderboardController implements Controller {
@@ -24,7 +23,7 @@ public final class LeaderboardController implements Controller {
   private final ResourceManager resources;
   private final LeaderboardView view;
   private final InputHandler inputHandler;
-  private Optional<LeaderboardModel> model = Optional.empty();
+  private LeaderboardModel model;
 
   /**
    * Creates a new leaderboard controller.
@@ -44,9 +43,7 @@ public final class LeaderboardController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter(final GameSession gameSession) {
-    model =
-        Optional.of(
-            new LeaderboardModel(gameSession, applicationContext.getLeaderboard().getTopEntries()));
+    model = new LeaderboardModel(gameSession, applicationContext.getLeaderboard().getTopEntries());
     resources.playBackgroundMusic("menuLoop.wav", MUSIC_VOLUME);
     setupKeyBindings();
     LOGGER.info("Entering leaderboard state");
@@ -70,7 +67,7 @@ public final class LeaderboardController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void render() {
-    view.render(model.get());
+    view.render(model);
   }
 
   /** {@inheritDoc} */

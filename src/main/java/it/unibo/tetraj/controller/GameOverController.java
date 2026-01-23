@@ -15,7 +15,6 @@ import it.unibo.tetraj.util.ResourceManager;
 import it.unibo.tetraj.view.GameOverView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
-import java.util.Optional;
 
 /** Controller for the game over state. Handles game over logic and input. */
 public class GameOverController implements Controller {
@@ -25,7 +24,7 @@ public class GameOverController implements Controller {
   private final ResourceManager resources;
   private final GameOverView view;
   private final InputHandler inputHandler;
-  private Optional<GameOverModel> model = Optional.empty();
+  private GameOverModel model;
 
   /**
    * Creates a new game over controller.
@@ -47,7 +46,7 @@ public class GameOverController implements Controller {
   public void enter(final GameSession gameSession) {
     final boolean isScoreSaved = saveScoreIfQualifying(gameSession);
     resources.playSound("gameOver.wav");
-    model = Optional.of(new GameOverModel(gameSession, isScoreSaved));
+    model = new GameOverModel(gameSession, isScoreSaved);
     setupKeyBindings();
     LOGGER.info("Entering game over state");
   }
@@ -55,8 +54,7 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public GameSession exit() {
-    final GameSession gameSession =
-        model.map(GameOverModel::getGameSession).orElse(GameSession.empty());
+    final GameSession gameSession = model != null ? model.getGameSession() : GameSession.empty();
     inputHandler.clearBindings();
     LOGGER.info(String.format("Exiting game over state with %s", gameSession));
     return gameSession;
@@ -71,7 +69,7 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void render() {
-    view.render(model.get());
+    view.render(model);
   }
 
   /** {@inheritDoc} */
