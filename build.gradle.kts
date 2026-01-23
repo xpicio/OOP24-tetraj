@@ -17,6 +17,9 @@ plugins {
     id("com.gradleup.shadow") version "9.2.2"
     id("org.danilopianini.gradle-java-qa") version "1.157.0"
     id("com.diffplug.spotless") version "6.23.3"
+
+    // JaCoCo for code coverage
+    jacoco
 }
 
 java {
@@ -74,6 +77,21 @@ tasks.withType<Test>().configureEach {
         // Display all events (test started, succeeded, failed...)
         events(*org.gradle.api.tasks.testing.logging.TestLogEvent.entries.toTypedArray())
         showStandardStreams = true // Show the standard output
+    }
+    finalizedBy(tasks.jacocoTestReport) // Generate coverage report after tests
+}
+
+// JaCoCo configuration
+jacoco {
+    toolVersion = "0.8.14"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
     }
 }
 
