@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Local release script for testing the build process
 # Usage: ./scripts/local-release.sh [version]
