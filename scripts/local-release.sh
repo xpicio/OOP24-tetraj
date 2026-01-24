@@ -19,6 +19,7 @@ echo "Building shadow JAR..."
 
 # Copy JAR with version
 echo "Packaging JAR..."
+rm -fR tetraj-*.jar
 cp build/libs/tetraj-all.jar tetraj-$VERSION.jar
 cp build/libs/tetraj-all.jar tetraj.jar
 
