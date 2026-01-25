@@ -1,15 +1,23 @@
 package it.unibo.tetraj.model.leaderboard;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import redis.clients.jedis.JedisPooled;
 
 /** Unit tests for RedisStorageProvider using Mockito. */
 class RedisStorageProviderTest {
@@ -24,7 +32,10 @@ class RedisStorageProviderTest {
   private static final int LEADERBOARD_ENTRY_P1_LEVEL = 5;
   private static final int LEADERBOARD_ENTRY_P1_LINES = 20;
   private static final int LEADERBOARD_ENTRY_P1_DURATION = 10;
+  private static final String REDIS_PING_RESPONSE = "PONG";
+  private static final int ADDITIONAL_ENTRIES = 5;
   private RedisStorageProvider provider;
+  private RedisStorageProvider mockProvider;
 
   @BeforeEach
   void setUp() {
@@ -36,6 +47,26 @@ class RedisStorageProviderTest {
             REDIS_DEFAULT_PORT,
             Optional.empty(),
             Optional.empty());
+
+    final JedisPooled mockJedis = mock(JedisPooled.class);
+    final AtomicReference<String> storedData = new AtomicReference<>(null);
+    when(mockJedis.ping()).thenReturn(REDIS_PING_RESPONSE);
+    when(mockJedis.get(anyString())).thenAnswer(invocation -> storedData.get());
+    doAnswer(
+            invocation -> {
+              storedData.set(invocation.getArgument(1));
+              return null;
+            })
+        .when(mockJedis)
+        .set(eq("tetraj:leaderboard"), anyString());
+    mockProvider =
+        new RedisStorageProvider(
+            false,
+            REDIS_DEFAULT_HOSTNAME,
+            REDIS_DEFAULT_PORT,
+            Optional.empty(),
+            Optional.empty(),
+            mockJedis);
   }
 
   @Test
@@ -162,7 +193,7 @@ class RedisStorageProviderTest {
   @Test
   @DisplayName("should create provider with username and password")
   void shouldCreateProviderWithUsernameAndPassword() {
-    // Arrange & Act
+    // Arrange
     final RedisStorageProvider authProvider =
         new RedisStorageProvider(
             false,
@@ -170,6 +201,8 @@ class RedisStorageProviderTest {
             REDIS_DEFAULT_PORT,
             Optional.of("testuser"),
             Optional.of("testpass"));
+
+    // Act
     final String name = authProvider.getName();
 
     // Assert
@@ -179,13 +212,93 @@ class RedisStorageProviderTest {
   @Test
   @DisplayName("should create provider without authentication")
   void shouldCreateProviderWithoutAuthentication() {
-    // Arrange & Act
+    // Arrange
     final RedisStorageProvider noAuthProvider =
         new RedisStorageProvider(
             false, REDIS_DEFAULT_HOSTNAME, REDIS_DEFAULT_PORT, Optional.empty(), Optional.empty());
+
+    // Act
     final String name = noAuthProvider.getName();
 
     // Assert
     assertTrue(name.contains("default"), "Should use default username when none provided");
+  }
+
+  @Test
+  @DisplayName("should be available after successful ping")
+  void shouldBeAvailableAfterSuccessfulPing() {
+    // Act
+    mockProvider.initialize();
+
+    // Assert
+    assertTrue(mockProvider.isAvailable(), "Provider should be available after successful ping");
+  }
+
+  @Test
+  @DisplayName("should save and retrieve multiple entries sorted by score")
+  void shouldSaveAndRetrieveMultipleEntriesSortedByScore() {
+    // Arrange
+    final LeaderboardEntry lowScoreEntry =
+        new LeaderboardEntry(
+            "player1",
+            "LowScorer",
+            500,
+            Instant.now(),
+            LEADERBOARD_ENTRY_P1_LEVEL,
+            LEADERBOARD_ENTRY_P1_LINES,
+            Duration.ofMinutes(LEADERBOARD_ENTRY_P1_DURATION));
+    final LeaderboardEntry highScoreEntry =
+        new LeaderboardEntry(
+            "player2",
+            "HighScorer",
+            2000,
+            Instant.now(),
+            LEADERBOARD_ENTRY_P1_LEVEL,
+            LEADERBOARD_ENTRY_P1_LINES,
+            Duration.ofMinutes(LEADERBOARD_ENTRY_P1_DURATION));
+
+    mockProvider.initialize();
+
+    // Act
+    mockProvider.save(lowScoreEntry);
+    mockProvider.save(highScoreEntry);
+
+    final List<LeaderboardEntry> entries = mockProvider.getTop();
+
+    // Assert
+    assertEquals(2, entries.size(), "Should have two entries");
+    assertEquals(
+        highScoreEntry.nickname(),
+        entries.getFirst().nickname(),
+        "player2 should be first (highest score)");
+    assertEquals(
+        lowScoreEntry.nickname(), entries.getLast().nickname(), "player1 should be second");
+  }
+
+  @Test
+  @DisplayName("should limit entries to MAX_ENTRIES")
+  void shouldLimitEntriesToMaxEntries() {
+    // Arrange
+    mockProvider.initialize();
+
+    // Act - add more than MAX_ENTRIES entries
+    for (int i = 0; i < StorageProvider.MAX_ENTRIES + ADDITIONAL_ENTRIES; i++) {
+      final LeaderboardEntry entry =
+          new LeaderboardEntry(
+              "player" + i,
+              "Player" + i,
+              (long) i * 100,
+              Instant.now(),
+              i,
+              i * 2,
+              Duration.ofMinutes(i));
+      mockProvider.save(entry);
+    }
+
+    final List<LeaderboardEntry> entries = mockProvider.getTop();
+
+    // Assert
+    assertEquals(
+        StorageProvider.MAX_ENTRIES, entries.size(), "Should only keep MAX_ENTRIES top scores");
   }
 }

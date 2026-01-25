@@ -28,6 +28,7 @@ public final class RedisStorageProvider implements StorageProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RedisStorageProvider.class);
   private static final String LEADERBOARD_KEY = "tetraj:leaderboard";
+  private static final String DEFAULT_USERNAME = "default";
   // Connection establishment timeout
   private static final int CONNECTION_TIMEOUT = 1500;
   // Read/write operations timeout
@@ -72,15 +73,9 @@ public final class RedisStorageProvider implements StorageProvider {
       final int port,
       final Optional<String> username,
       final Optional<String> password) {
-    final String scheme = ssl ? "rediss" : "redis";
-    final String userAuthentication =
-        password.isPresent()
-            ? String.format("%s:%s", username.orElse("default"), password.get())
-            : username.orElse("default");
-
     isAvailable = false;
     this.hostname = hostname;
-    connectionString = String.format("%s://%s@%s:%d", scheme, userAuthentication, hostname, port);
+    connectionString = buildConnectionString(ssl, hostname, port, username, password);
 
     final var configBuilder =
         DefaultJedisClientConfig.builder()
@@ -94,6 +89,29 @@ public final class RedisStorageProvider implements StorageProvider {
       configBuilder.password(password.get());
     }
     jedis = new JedisPooled(new HostAndPort(hostname, port), configBuilder.build());
+  }
+
+  /**
+   * Package-private constructor for testing with a mock JedisPooled instance.
+   *
+   * @param ssl Whether to use TLS/SSL (true for rediss://, false for redis://)
+   * @param hostname Redis server hostname
+   * @param port Redis server port
+   * @param username Optional username for authentication (empty if not required)
+   * @param password Optional password for authentication (empty if not required)
+   * @param jedis The JedisPooled instance (can be mocked)
+   */
+  RedisStorageProvider(
+      final boolean ssl,
+      final String hostname,
+      final int port,
+      final Optional<String> username,
+      final Optional<String> password,
+      final JedisPooled jedis) {
+    isAvailable = false;
+    this.hostname = hostname;
+    connectionString = buildConnectionString(ssl, hostname, port, username, password);
+    this.jedis = jedis;
   }
 
   /**
@@ -230,5 +248,30 @@ public final class RedisStorageProvider implements StorageProvider {
       LOGGER.error("Failed to load from {}: {}", getName(), e.getMessage());
       throw e;
     }
+  }
+
+  /**
+   * Builds the connection string from the provided parameters.
+   *
+   * @param ssl Whether to use TLS/SSL
+   * @param hostname Redis server hostname
+   * @param port Redis server port
+   * @param username Optional username for authentication
+   * @param password Optional password for authentication
+   * @return The formatted connection string
+   */
+  private static String buildConnectionString(
+      final boolean ssl,
+      final String hostname,
+      final int port,
+      final Optional<String> username,
+      final Optional<String> password) {
+    final String scheme = ssl ? "rediss" : "redis";
+    final String userAuthentication =
+        password.isPresent()
+            ? String.format("%s:%s", username.orElse(DEFAULT_USERNAME), password.get())
+            : username.orElse(DEFAULT_USERNAME);
+
+    return String.format("%s://%s@%s:%d", scheme, userAuthentication, hostname, port);
   }
 }

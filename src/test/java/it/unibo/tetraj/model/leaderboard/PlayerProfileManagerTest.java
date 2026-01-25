@@ -3,14 +3,12 @@ package it.unibo.tetraj.model.leaderboard;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,26 +20,7 @@ import org.junit.jupiter.api.Test;
  */
 class PlayerProfileManagerTest {
 
-  private static final String TEST_PROFILE_FILENAME = "testPlayerProfile.json";
   private static final int UUID_LENGTH_WITH_DASHES = 36;
-  private Path testProfilePath;
-
-  @BeforeEach
-  void setUp() throws IOException {
-    // Arrange - backup and remove existing profile if present
-    testProfilePath = Paths.get(System.getProperty("user.home"), TEST_PROFILE_FILENAME);
-    if (Files.exists(testProfilePath)) {
-      Files.delete(testProfilePath);
-    }
-  }
-
-  @AfterEach
-  void tearDown() throws IOException {
-    // Clean up test profile file
-    if (Files.exists(testProfilePath)) {
-      Files.delete(testProfilePath);
-    }
-  }
 
   @Test
   @DisplayName("should return singleton instance")
@@ -52,6 +31,20 @@ class PlayerProfileManagerTest {
 
     // Assert
     assertEquals(instance1, instance2, "Should return same singleton instance");
+  }
+
+  @Test
+  @DisplayName("should persist profile to file system")
+  void shouldPersistProfileToFileSystem() {
+    // Arrange
+    final String profileFileName = "tetrajPlayerProfile.json";
+    final Path testProfilePath = Paths.get(System.getProperty("user.home"), profileFileName);
+
+    // Act
+    PlayerProfileManager.getInstance();
+
+    // Assert
+    assertTrue(Files.exists(testProfilePath), "Profile file should be created");
   }
 
   @Test
@@ -77,16 +70,6 @@ class PlayerProfileManagerTest {
     // Assert
     assertNotNull(profile1.nickname(), "Nickname should not be null");
     assertNotNull(profile2.nickname(), "Nickname should not be null");
-  }
-
-  @Test
-  @DisplayName("should persist profile to file system")
-  void shouldPersistProfileToFileSystem() {
-    // Act
-    PlayerProfileManager.getInstance();
-
-    // Assert
-    assertNotNull(Files.exists(testProfilePath), "Profile file should be created");
   }
 
   @Test
