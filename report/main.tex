@@ -149,13 +149,16 @@ La \textbf{strategia di selezione} determina quale sarà il prossimo tetromino. 
 
 La \textbf{strategia di velocità} determina quanto rapidamente i tetromini cadono in base al livello corrente. Anche qui le due modalità (classica e moderna) differiscono nella formula di calcolo ma hanno lo stesso scopo.
 
-La \textbf{classifica} mantiene l'elenco dei migliori punteggi ottenuti. Ogni voce della classifica è rappresentata da un \textbf{record} che associa un punteggio ad altre informazioni rilevanti (ad esempio la data). La classifica è ordinata in modo decrescente per punteggio e può avere un numero massimo di 10 voci.
+La \textbf{classifica} mantiene l'elenco dei migliori punteggi ottenuti. Ogni voce della classifica è rappresentata da un \textbf{record} che associa un punteggio ad altre informazioni rilevanti (ad esempio la data). La classifica è ordinata in modo decrescente per punteggio e può avere un numero massimo di 10 voci. Al termine di una partita, se il punteggio ottenuto è sufficientemente alto, il giocatore può inserire il proprio record in classifica.
 
 Infine il \textbf{giocatore} interagisce con la partita attraverso comandi: spostare il pezzo, ruotarlo, farlo cadere rapidamente, metterlo in hold, mettere in pausa.
 
-% Placeholder per lo schema UML
-\vspace{1cm}
-\noindent\textit{[Schema UML del dominio: da inserire]}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{resources/game-model.png}
+    \caption{Schema UML dell'analisi del problema, con rappresentate le entità principali ed i rapporti fra loro}
+    \label{fig:domain-model}
+\end{figure}
 
 \chapter{Design}
 
