@@ -11,6 +11,10 @@ import it.unibo.tetraj.util.ApplicationProperties;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
+import it.unibo.tetraj.view.GameOverView;
+import it.unibo.tetraj.view.LeaderboardView;
+import it.unibo.tetraj.view.MenuView;
+import it.unibo.tetraj.view.PlayView;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -132,10 +136,10 @@ public final class ApplicationContext {
     // Create state manager
     stateManager = new GameStateManager();
     // Create all controllers
-    final Controller leaderboardController = new LeaderboardController(this);
-    final Controller menuController = new MenuController(this);
-    final Controller playController = new PlayController(this);
-    final Controller gameOverController = new GameOverController(this);
+    final Controller leaderboardController = new LeaderboardController(this, new LeaderboardView());
+    final Controller menuController = new MenuController(this, new MenuView());
+    final Controller playController = new PlayController(this, new PlayView());
+    final Controller gameOverController = new GameOverController(this, new GameOverView());
     // Register controllers with state manager
     stateManager.registerController(GameState.MENU, menuController);
     stateManager.registerController(GameState.PLAYING, playController);

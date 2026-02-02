@@ -5,8 +5,6 @@ import it.unibo.tetraj.model.PlayModel;
 import it.unibo.tetraj.model.piece.AbstractTetromino;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 /** View for the playing state. Renders the Tetris game. */
@@ -23,7 +21,7 @@ public final class PlayView extends AbstractView<PlayModel> {
 
   /** {@inheritDoc} */
   @Override
-  protected void renderContent(final PlayModel model) {
+  protected void renderContent(final Graphics2D g, final PlayModel model) {
     // Lazy initialization of renderer with board dimensions
     if (renderer == null) {
       renderer = new BoardRenderer(model.getBoard());
@@ -32,37 +30,11 @@ public final class PlayView extends AbstractView<PlayModel> {
     final BoardRenderer localRenderer = renderer;
 
     RenderUtils.renderWithGraphics(
-        getBufferStrategy(),
+        g,
         getBackgroundColor(),
         getWindowWidth(),
         getWindowHeight(),
-        g -> localRenderer.render(g, model));
-  }
-
-  /**
-   * Captures the current game state as a BufferedImage. Creates a snapshot of the entire game view
-   * including board, score, level, and next piece preview. Useful for creating game-over screens or
-   * transitions.
-   *
-   * @param model The play model to render
-   * @return A BufferedImage containing the current rendered frame
-   */
-  public BufferedImage captureFrame(final PlayModel model) {
-    if (renderer == null) {
-      renderer = new BoardRenderer(model.getBoard());
-    }
-
-    final BufferedImage image =
-        new BufferedImage(getWindowWidth(), getWindowHeight(), BufferedImage.TYPE_INT_RGB);
-    final Graphics2D g = image.createGraphics();
-
-    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    // Clear background
-    g.setColor(getBackgroundColor());
-    g.fillRect(0, 0, getWindowWidth(), getWindowHeight());
-    renderer.render(g, model);
-    g.dispose();
-    return image;
+        () -> localRenderer.render(g, model));
   }
 
   /**

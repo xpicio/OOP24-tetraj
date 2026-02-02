@@ -8,9 +8,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.image.BufferStrategy;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Utility class for common rendering operations in views. Provides methods for text rendering,
@@ -180,39 +178,24 @@ public final class RenderUtils {
    * Executes a rendering operation with proper setup and cleanup. Handles graphics preparation,
    * antialiasing, background clearing, and disposal.
    *
-   * @param bufferStrategy The buffer strategy to use
+   * @param g The graphics context for rendering
    * @param backgroundColor The background color
    * @param width Canvas width
    * @param height Canvas height
    * @param renderAction The rendering code to execute
    */
   public static void renderWithGraphics(
-      final BufferStrategy bufferStrategy,
+      final Graphics2D g,
       final Color backgroundColor,
       final int width,
       final int height,
-      final Consumer<Graphics2D> renderAction) {
-    if (bufferStrategy == null) {
-      return;
-    }
-
-    Graphics2D g = null;
-    try {
-      g = (Graphics2D) bufferStrategy.getDrawGraphics();
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g.setRenderingHint(
-          RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-      g.setColor(backgroundColor);
-      g.fillRect(0, 0, width, height);
-
-      renderAction.accept(g);
-
-      bufferStrategy.show();
-    } finally {
-      if (g != null) {
-        g.dispose();
-      }
-    }
+      final Runnable renderAction) {
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    g.setRenderingHint(
+        RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    g.setColor(backgroundColor);
+    g.fillRect(0, 0, width, height);
+    renderAction.run();
   }
 
   /**

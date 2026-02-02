@@ -11,7 +11,7 @@ import it.unibo.tetraj.model.MenuModel;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
-import it.unibo.tetraj.view.MenuView;
+import it.unibo.tetraj.view.AbstractView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
 
@@ -23,22 +23,24 @@ public class MenuController implements Controller {
   private final ApplicationContext applicationContext;
   private final ResourceManager resources;
   private final MenuModel model;
-  private final MenuView view;
+  private final AbstractView<MenuModel> view;
   private final InputHandler inputHandler;
 
   /**
    * Creates a new menu controller.
    *
    * @param applicationContext The application context
+   * @param view The view for rendering the menu state
    */
   @SuppressFBWarnings(
       value = "EI_EXPOSE_REP2",
       justification = "ApplicationContext is a shared singleton service")
-  public MenuController(final ApplicationContext applicationContext) {
+  public MenuController(
+      final ApplicationContext applicationContext, final AbstractView<MenuModel> view) {
     this.applicationContext = applicationContext;
     resources = ResourceManager.getInstance();
     model = new MenuModel();
-    view = new MenuView();
+    this.view = view;
     inputHandler = new InputHandler();
   }
 

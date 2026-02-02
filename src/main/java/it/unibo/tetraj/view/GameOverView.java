@@ -22,13 +22,13 @@ public class GameOverView extends AbstractView<GameOverModel> {
 
   /** {@inheritDoc} */
   @Override
-  protected void renderContent(final GameOverModel model) {
+  protected void renderContent(final Graphics2D g, final GameOverModel model) {
     RenderUtils.renderWithGraphics(
-        getBufferStrategy(),
+        g,
         getBackgroundColor(),
         getWindowWidth(),
         getWindowHeight(),
-        g -> {
+        () -> {
           // Draw background image if exist
           final BufferedImage backgroundImage = model.getBackgroundImage();
           if (backgroundImage != null) {

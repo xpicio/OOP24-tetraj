@@ -33,13 +33,13 @@ public final class MenuView extends AbstractView<MenuModel> {
 
   /** {@inheritDoc} */
   @Override
-  protected void renderContent(final MenuModel model) {
+  protected void renderContent(final Graphics2D g, final MenuModel model) {
     RenderUtils.renderWithGraphics(
-        getBufferStrategy(),
+        g,
         getBackgroundColor(),
         getWindowWidth(),
         getWindowHeight(),
-        g -> {
+        () -> {
           // Draw background image with overlay
           RenderUtils.drawBackgroundWithOverlay(
               g, backgroundImage, getWindowWidth(), getWindowHeight(), BACKGROUND_OVERLAY_ALPHA);

@@ -8,7 +8,10 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 /**
  * Abstract base class for all game views. Handles common setup for canvas, buffer strategy, and
@@ -73,15 +76,48 @@ public abstract class AbstractView<M> {
         return;
       }
     }
-    renderContent(model);
+
+    Graphics2D g = null;
+    try {
+      g = (Graphics2D) bufferStrategy.getDrawGraphics();
+      renderContent(g, model);
+      bufferStrategy.show();
+    } finally {
+      if (g != null) {
+        g.dispose();
+      }
+    }
   }
 
   /**
    * Renders the view content. Subclasses implement this to define their specific rendering logic.
    *
+   * @param g The graphics context for rendering
    * @param model The model containing data to render
    */
-  protected abstract void renderContent(M model);
+  protected abstract void renderContent(Graphics2D g, M model);
+
+  /**
+   * Captures the current game state as a BufferedImage. Creates a snapshot of the entire game view
+   * including board, score, level, and next piece preview. Useful for creating game-over screens or
+   * transitions.
+   *
+   * @param model The play model to render
+   * @return A BufferedImage containing the current rendered frame
+   */
+  public BufferedImage captureFrame(final M model) {
+    final BufferedImage image =
+        new BufferedImage(getWindowWidth(), getWindowHeight(), BufferedImage.TYPE_INT_RGB);
+    final Graphics2D g = image.createGraphics();
+
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    // Clear background
+    g.setColor(getBackgroundColor());
+    g.fillRect(0, 0, getWindowWidth(), getWindowHeight());
+    renderContent(g, model);
+    g.dispose();
+    return image;
+  }
 
   /**
    * Gets the canvas component used for rendering.

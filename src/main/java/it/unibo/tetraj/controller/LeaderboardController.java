@@ -10,7 +10,7 @@ import it.unibo.tetraj.model.LeaderboardModel;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
-import it.unibo.tetraj.view.LeaderboardView;
+import it.unibo.tetraj.view.AbstractView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
 
@@ -21,7 +21,7 @@ public final class LeaderboardController implements Controller {
   private static final float MUSIC_VOLUME = 0.1f;
   private final ApplicationContext applicationContext;
   private final ResourceManager resources;
-  private final LeaderboardView view;
+  private final AbstractView<LeaderboardModel> view;
   private final InputHandler inputHandler;
   private LeaderboardModel model;
 
@@ -29,14 +29,16 @@ public final class LeaderboardController implements Controller {
    * Creates a new leaderboard controller.
    *
    * @param applicationContext The application context
+   * @param view The view for rendering the leaderboard state
    */
   @SuppressFBWarnings(
       value = "EI_EXPOSE_REP2",
       justification = "ApplicationContext is a shared singleton service")
-  public LeaderboardController(final ApplicationContext applicationContext) {
+  public LeaderboardController(
+      final ApplicationContext applicationContext, final AbstractView<LeaderboardModel> view) {
     this.applicationContext = applicationContext;
     resources = ResourceManager.getInstance();
-    view = new LeaderboardView();
+    this.view = view;
     inputHandler = new InputHandler();
   }
 

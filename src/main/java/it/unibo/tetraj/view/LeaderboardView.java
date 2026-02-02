@@ -35,13 +35,13 @@ public class LeaderboardView extends AbstractView<LeaderboardModel> {
 
   /** {@inheritDoc} */
   @Override
-  protected void renderContent(final LeaderboardModel model) {
+  protected void renderContent(final Graphics2D g, final LeaderboardModel model) {
     RenderUtils.renderWithGraphics(
-        getBufferStrategy(),
+        g,
         getBackgroundColor(),
         getWindowWidth(),
         getWindowHeight(),
-        g -> {
+        () -> {
           // Draw background image with overlay
           RenderUtils.drawBackgroundWithOverlay(
               g, backgroundImage, getWindowWidth(), getWindowHeight(), BACKGROUND_OVERLAY_ALPHA);

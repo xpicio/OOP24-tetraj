@@ -11,7 +11,7 @@ import it.unibo.tetraj.model.PlayModel;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
-import it.unibo.tetraj.view.PlayView;
+import it.unibo.tetraj.view.AbstractView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
 import java.time.Instant;
@@ -23,7 +23,7 @@ public final class PlayController implements Controller {
   private final ApplicationContext applicationContext;
   private final ResourceManager resources;
   private final PlayModel model;
-  private final PlayView view;
+  private final AbstractView<PlayModel> view;
   private final InputHandler inputHandler;
   private Instant gameStartTime;
 
@@ -31,15 +31,17 @@ public final class PlayController implements Controller {
    * Creates a new play controller.
    *
    * @param applicationContext The application context
+   * @param view The view for rendering the play state
    */
   @SuppressFBWarnings(
       value = "EI_EXPOSE_REP2",
       justification = "ApplicationContext is a shared singleton service")
-  public PlayController(final ApplicationContext applicationContext) {
+  public PlayController(
+      final ApplicationContext applicationContext, final AbstractView<PlayModel> view) {
     this.applicationContext = applicationContext;
     resources = ResourceManager.getInstance();
     model = new PlayModel();
-    view = new PlayView();
+    this.view = view;
     inputHandler = new InputHandler();
   }
 
