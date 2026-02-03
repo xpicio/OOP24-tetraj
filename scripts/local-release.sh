@@ -1,12 +1,13 @@
 #!/bin/zsh
 
 # Local release script for testing the build process
-# Usage: ./scripts/local-release.sh [version]
+# Usage: ./scripts/local-release.sh
 
 # Exit on error
 set -e
 
-VERSION=${1:-"1.0.0-SNAPSHOT"}
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VERSION=$(grep "^app.version=" $SCRIPT_DIR/../src/main/resources/app.properties | cut -d'=' -f2)
 echo "Building Tetraj release $VERSION"
 
 # Auto-format all Java files using Google Java Format via Spotless
@@ -20,7 +21,6 @@ echo "Building shadow JAR..."
 # Copy JAR with version
 echo "Packaging JAR..."
 rm -fR tetraj-*.jar
-cp build/libs/tetraj-all.jar tetraj-$VERSION.jar
 cp build/libs/tetraj-all.jar tetraj.jar
 
 # Generate Javadoc

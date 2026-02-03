@@ -107,13 +107,13 @@ Requisito: [Java 21](https://adoptium.net/temurin/releases?version=21) o superio
 ### macOS / Linux
 
 ```bash
-curl -L https://raw.githubusercontent.com/xpicio/tetraj/refs/heads/main/tetraj.jar -o /tmp/tetraj.jar && java -jar /tmp/tetraj.jar
+curl -L https://raw.githubusercontent.com/xpicio/OOP24-tetraj/refs/heads/main/tetraj.jar -o /tmp/tetraj.jar && java -jar /tmp/tetraj.jar
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xpicio/tetraj/refs/heads/main/tetraj.jar" -OutFile "$env:TEMP\tetraj.jar"; java -jar "$env:TEMP\tetraj.jar"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xpicio/OOP24-tetraj/refs/heads/main/tetraj.jar" -OutFile "$env:TEMP\tetraj.jar"; java -jar "$env:TEMP\tetraj.jar"
 ```
 
 ## Ringraziamenti
