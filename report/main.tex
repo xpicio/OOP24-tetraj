@@ -267,6 +267,60 @@ Per quanto riguarda la \textbf{persistenza}, la \textbf{Leaderboard} è testata 
 
 Infine le classi \textbf{GameStateManager} e \textbf{GameSession} sono testate per verificare le transizioni tra gli stati del gioco e la corretta gestione del ciclo di vita della partita.
 
+\section{Note di sviluppo}
+
+\subsection{Librerie di terze parti}
+
+\textbf{Log4j2}
+
+Il logging è realizzato con \textbf{Log4j2}, accessibile tramite l'interfaccia \texttt{Logger} e l'implementazione \texttt{ConsoleLogger}. Un esempio di utilizzo è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/GameStateManager.java#L17C31-L17C37}.
+
+\textbf{Jackson}
+
+La serializzazione e deserializzazione dei dati della classifica su file JSON, o su databse Redis, è realizzata con \textbf{Jackson}. Un esempio di inizializzazione è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L28C37-L28C43}.
+
+In questa funzione vengono letti i dati o scritti con un default in caso di errore: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L119-L146}.
+
+\textbf{Jedis}
+
+La connessione al database Redis per la persistenza della classifica è gestita tramite \textbf{Jedis}. Un esempio di inizializzazione del pool di connessioni è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/RedisStorageProvider.java#L70-L92}.
+
+\textbf{JUnit}
+
+I test parametrizzati di \textbf{JUnit 5} permettono di eseguire lo stesso test con diversi input. Un esempio con l'annotazione \texttt{MethodSource} è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/piece/TetrominoTest.java#L201}.
+
+Un secondo esempio con l'annotazione \texttt{CsvSource} è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/PlayModelTest.java#L661}.
+
+\textbf{Mockito}
+
+\textbf{Mockito} è utilizzato per creare mock objects e isolare le unità sotto test dalle dipendenze esterne. Un esempio è il mock del pool di connessioni Jedis: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/leaderboard/RedisStorageProviderTest.java#L51-L69}.
+
+\subsection{Utilizzo di generici}
+
+Pattern ricorsivo \texttt{<T extends AbstractTetromino<T>{}>} per operazioni type-safe. Un esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/AbstractTetromino.java#L10}.
+
+Strutture complesse innestate come ad esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/TetrominoRegistry.java#L14-L16}.
+
+Pattern Jackson per preservare tipi generici a runtime tramite classe anonima. Esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L33-L36}.
+
+\subsection{Concorrenza}
+
+Inizializzazione lazy thread-safe con \texttt{ConcurrentHashMap.computeIfAbsent()}, come ad esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/util/LoggerFactory.java#L50}.
+
+Shutdown hook con watchdog thread per cleanup risorse durante la chiusura dell'applicazione, \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/ApplicationContext.java#L176-L201}.
+
+\subsection{Costrutti funzionali}
+
+Lambda utilizzare in diversi punti del codice, eccone un esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/TetrominoRegistry.java#L20-L31}.
+
+Method references, utilizzato dove possibile. Alcuni esempi: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L189}, \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/controller/PlayController.java#L144}.
+
+Stream, come ad esempio \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/RedisStorageProvider.java#L175-L179}.
+
+Chaining null-safe con \texttt{Optional}, esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L240}.
+
+Uso di functional interfaces (\texttt{Consumer}, \texttt{BiFunction}, \texttt{Runnable}) come parametri. Esempi: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L325-L338}.
+
 \appendix
 
 \chapter{Guida utente}
@@ -277,6 +331,20 @@ Per avviare Tetraj è necessario avere Java 21 (o versione successiva)~\cite{ado
 
 \begin{verbatim}
 java -jar tetraj.jar
+\end{verbatim}
+
+In alternativa, è possibile scaricare l'ultima versione ed eseguire direttamente il gioco con un singolo comando.
+
+\textbf{macOS / Linux (zsh/bash):}
+\begin{verbatim}
+curl -L https://tinyurl.com/tetraj-jar -o /tmp/tetraj.jar && \
+  java -jar /tmp/tetraj.jar
+\end{verbatim}
+
+\textbf{Windows (PowerShell):}
+\begin{verbatim}
+Invoke-WebRequest -Uri "https://tinyurl.com/tetraj-jar" `
+  -OutFile "$env:TEMP\tetraj.jar"; java -jar "$env:TEMP\tetraj.jar"
 \end{verbatim}
 
 \section{Schermata iniziale}
